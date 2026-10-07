@@ -1,0 +1,22 @@
+# --- secrets & local environment -------------------------------------------
+.env
+.venv/
+
+# --- raw data: download with `make download` (CC BY-NC-SA 4.0, not redistributed)
+data/raw/*
+!data/raw/.gitkeep
+
+# --- Power BI CSV exports: regenerate with `make export` ---------------------
+powerbi/data/*
+!powerbi/data/.gitkeep
+# NOTE: *.pbix is deliberately NOT ignored — commit powerbi/olist_dashboard.pbix once built.
+
+# --- Python / Jupyter ----------------------------------------------------------
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# --- OS / editor noise -----------------------------------------------------------
+.DS_Store
+.vscode/
+.idea/
