@@ -1,0 +1,9 @@
+rfm_segment,customers,pct_customers,avg_recency_days,avg_orders,avg_monetary_brl,total_gmv_brl,pct_gmv
+ALL CUSTOMERS,94703,100.00,239,1.03,165.61,15683706.74,100.00
+At risk - high value,20994,22.17,336,1.00,299.25,6282418.02,40.06
+New - high value,14602,15.42,93,1.00,303.06,4425306.20,28.22
+Hibernating,22587,23.85,270,1.00,72.51,1637688.06,10.44
+New - low value,22053,23.29,91,1.00,73.05,1611062.38,10.27
+Lost,11593,12.24,472,1.00,72.54,841004.06,5.36
+Loyal - lapsing,1649,1.74,322,2.08,298.17,491687.43,3.14
+Champions,1225,1.29,90,2.16,322.07,394540.59,2.52

@@ -139,7 +139,8 @@ BEGIN
           ON cm.zip_prefix = zc.zip_prefix
          AND cm.rn = 1;
   INSERT INTO dq_log (rule_id, table_name, description, rows_affected)
-  VALUES ('R03', 'geolocation_zip', 'Zip prefixes aggregated (AVG lat/lng, mode city, n_points)', ROW_COUNT());
+  VALUES ('R03', 'geolocation_zip',
+          'Zip prefixes aggregated (AVG lat/lng, mode city, n_points)', ROW_COUNT());
 
   -- -------------------------------------------------------------------------
   -- 3. customers (R01, R04, R17)
@@ -210,7 +211,9 @@ BEGIN
   LEFT JOIN category_translation AS ct
          ON ct.category_pt = TRIM(sp.product_category_name);
   INSERT INTO dq_log (rule_id, table_name, description, rows_affected)
-  VALUES ('R05', 'products', 'Columns renamed: product_name_lenght/description_lenght -> name_length/description_length', ROW_COUNT());
+  VALUES ('R05', 'products',
+          'Renamed product_name_lenght/description_lenght -> name_length/description_length',
+          ROW_COUNT());
 
   INSERT INTO dq_log (rule_id, table_name, description, rows_affected)
   SELECT 'R06', 'products', 'Missing category -> category_pt sem_categoria / category_en unknown', COUNT(*)
@@ -221,7 +224,8 @@ BEGIN
   INSERT INTO dq_log (rule_id, table_name, description, rows_affected)
   SELECT 'R07', 'products',
          CONCAT('No translation, kept Portuguese name: ',
-                COALESCE(GROUP_CONCAT(DISTINCT p.category_pt ORDER BY p.category_pt SEPARATOR ', '), '(none)')),
+                COALESCE(GROUP_CONCAT(DISTINCT p.category_pt ORDER BY p.category_pt SEPARATOR ', '),
+                         '(none)')),
          COUNT(*)
   FROM products AS p
   LEFT JOIN category_translation AS ct
@@ -255,7 +259,9 @@ BEGIN
      OR delivered_ts < carrier_ts
      OR delivered_ts < purchase_ts;
   INSERT INTO dq_log (rule_id, table_name, description, rows_affected)
-  VALUES ('R11', 'orders', 'Timestamp anomalies flagged ts_anomaly=1 (approved<purchase, carrier<approved, delivered<carrier/purchase)', ROW_COUNT());
+  VALUES ('R11', 'orders',
+          'Timestamp anomalies -> ts_anomaly=1 (approved<purchase, carrier<approved, delivered<carrier)',
+          ROW_COUNT());
 
   -- R12: 'delivered' status but no delivery date -> cannot measure SLA; stays is_valid_delivery = 0.
   INSERT INTO dq_log (rule_id, table_name, description, rows_affected)
@@ -338,7 +344,8 @@ BEGIN
            CAST(review_score AS UNSIGNED)                                         AS review_score,
            CASE WHEN TRIM(review_comment_title) <> ''
                   OR TRIM(review_comment_message) <> '' THEN 1 ELSE 0 END         AS has_comment,
-           DATE(STR_TO_DATE(NULLIF(TRIM(review_creation_date), ''), '%Y-%m-%d %H:%i:%s')) AS review_created_date,
+           DATE(STR_TO_DATE(NULLIF(TRIM(review_creation_date), ''), '%Y-%m-%d %H:%i:%s'))
+             AS review_created_date,
            STR_TO_DATE(NULLIF(TRIM(review_answer_timestamp), ''), '%Y-%m-%d %H:%i:%s')    AS review_answer_ts
     FROM stg_order_reviews
   ),
@@ -399,7 +406,8 @@ BEGIN
   VALUES ('LOAD', 'seller_leads', 'Rows loaded (all MQLs)', ROW_COUNT());
 
   INSERT INTO dq_log (rule_id, table_name, description, rows_affected)
-  SELECT 'R15', 'seller_leads', 'Leads won (closed deal found); days_to_close = won_date - first_contact_date',
+  SELECT 'R15', 'seller_leads',
+          'Leads won (closed deal found); days_to_close = won_date - first_contact_date',
          SUM(is_won)
   FROM seller_leads;
 

@@ -1,0 +1,7 @@
+tier_order,tier,sellers_in_tier,pct_of_sellers,gmv_share_pct
+1,top 1% of sellers,31,1.02,25.73
+2,top 5% of sellers,152,5.02,52.41
+3,top 10% of sellers,303,10.00,66.54
+4,top 20% of sellers,606,20.01,81.86
+5,top 50% of sellers,1515,50.02,96.48
+6,sellers needed for 80% of GMV,556,18.36,80.03

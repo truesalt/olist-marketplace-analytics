@@ -1,0 +1,6 @@
+stage_order,stage,orders,pct_of_purchased,step_conversion_pct,lost_at_this_step
+1,purchased,99092,100.00,,
+2,payment approved,98957,99.86,99.86,135
+3,handed to carrier,97362,98.25,98.39,1595
+4,delivered to customer,96188,97.07,98.79,1174
+5,reviewed,95545,96.42,99.33,643

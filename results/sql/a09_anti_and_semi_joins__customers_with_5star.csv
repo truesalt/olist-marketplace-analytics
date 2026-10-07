@@ -1,0 +1,3 @@
+method,customers_with_5star,pct_of_all_customers
+EXISTS (semi-join),55363,57.61
+IN subquery (semi-join),55363,57.61

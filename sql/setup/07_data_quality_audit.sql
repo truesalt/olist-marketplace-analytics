@@ -61,7 +61,8 @@ pk_checks (table_name, n_rows, n_keys) AS (
   UNION ALL SELECT 'products',        COUNT(*), COUNT(DISTINCT product_id) FROM products
   UNION ALL SELECT 'orders',          COUNT(*), COUNT(DISTINCT order_id) FROM orders
   UNION ALL SELECT 'order_items',     COUNT(*), COUNT(DISTINCT order_id, order_item_id) FROM order_items
-  UNION ALL SELECT 'order_payments',  COUNT(*), COUNT(DISTINCT order_id, payment_sequential) FROM order_payments
+  UNION ALL SELECT 'order_payments',  COUNT(*), COUNT(DISTINCT order_id, payment_sequential)
+            FROM order_payments
   UNION ALL SELECT 'order_reviews',   COUNT(*), COUNT(DISTINCT order_id) FROM order_reviews
   UNION ALL SELECT 'seller_leads',    COUNT(*), COUNT(DISTINCT mql_id) FROM seller_leads
 ),
@@ -151,6 +152,19 @@ UNION ALL
 SELECT 'payments_vs_items_gap_pct', 'order_items/order_payments', gap_pct, '<= 2%',
        CASE WHEN gap_pct > 2 THEN 'WARN' ELSE 'PASS' END
 FROM reconciliation
+UNION ALL
+-- Invisible control characters (e.g. a stray '\r' from Windows line endings) in key text fields
+SELECT 'text_values_with_control_chars', 'products/translation/reviews/leads',
+       (SELECT COUNT(*) FROM products             WHERE category_en REGEXP '[[:cntrl:]]')
+     + (SELECT COUNT(*) FROM category_translation WHERE category_en REGEXP '[[:cntrl:]]')
+     + (SELECT COUNT(*) FROM seller_leads         WHERE origin REGEXP '[[:cntrl:]]')
+     + (SELECT COUNT(*) FROM order_reviews        WHERE review_answer_ts IS NULL),
+       '= 0',
+       CASE WHEN (SELECT COUNT(*) FROM products             WHERE category_en REGEXP '[[:cntrl:]]')
+               + (SELECT COUNT(*) FROM category_translation WHERE category_en REGEXP '[[:cntrl:]]')
+               + (SELECT COUNT(*) FROM seller_leads         WHERE origin REGEXP '[[:cntrl:]]')
+               + (SELECT COUNT(*) FROM order_reviews        WHERE review_answer_ts IS NULL) = 0
+            THEN 'PASS' ELSE 'FAIL' END
 UNION ALL
 SELECT 'max_orders_per_customer_unique_id', 'customers', MAX(n_order_ids), 'info only', 'PASS'
 FROM (

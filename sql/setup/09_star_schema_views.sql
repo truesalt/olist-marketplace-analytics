@@ -187,7 +187,8 @@ LEFT JOIN  geolocation_zip AS cg ON cg.zip_prefix = c.zip_prefix;  -- 278 custom
 CREATE OR REPLACE VIEW v_dim_customer AS
 WITH params AS (
   SELECT MAX(CASE WHEN param_name = 'window_end' THEN CAST(param_value AS DATE) END)         AS window_end,
-         MAX(CASE WHEN param_name = 'repeat_horizon_days' THEN CAST(param_value AS UNSIGNED) END) AS horizon_days
+         MAX(CASE WHEN param_name = 'repeat_horizon_days' THEN CAST(param_value AS UNSIGNED) END)
+           AS horizon_days
   FROM cfg_params
 ),
 customer_orders AS (             -- every valid order, numbered per person in time order

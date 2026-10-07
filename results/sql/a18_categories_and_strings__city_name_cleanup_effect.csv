@@ -1,0 +1,4 @@
+source_table,distinct_raw_exact,distinct_raw_accent_insensitive,distinct_after_fn_strip_accents,variants_merged
+customers,4119,4119,4113,6
+sellers,611,610,606,5
+stg_geolocation (raw 1M points),8010,5969,5934,2076

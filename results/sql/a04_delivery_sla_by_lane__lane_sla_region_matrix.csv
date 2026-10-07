@@ -1,0 +1,6 @@
+seller_region,to_north_late_pct,to_northeast_late_pct,to_center_west_late_pct,to_southeast_late_pct,to_south_late_pct,all_customers_late_pct,delivered_orders
+Southeast,9.1,13.0,7.1,6.4,6.6,7.2,79352
+South,5.4,13.0,3.5,4.7,3.7,5.0,12819
+Northeast,11.6,9.4,10.0,6.8,11.6,8.4,1502
+Center-West,2.3,12.2,2.5,3.1,8.1,4.5,1419
+North,,25.0,,0.0,0.0,4.0,25

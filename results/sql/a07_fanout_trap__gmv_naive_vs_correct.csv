@@ -1,0 +1,3 @@
+method,joined_rows,gmv_brl,gmv_overstatement_pct,paid_brl,paid_overstatement_pct,orders_with_multi_items_and_payments
+1. naive: items JOIN payments,116664,16398421.16,4.56,20088048.33,28.06,275
+2. correct: pre-aggregate both sides per order,97905,15683706.74,0.00,15686469.07,0.00,275

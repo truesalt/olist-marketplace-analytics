@@ -1,0 +1,6 @@
+reconciliation_status,orders,pct_of_orders,items_total_brl,paid_total_brl,net_difference_brl
+1. match (within R$0.01),98362,98.92,15793088.78,15793088.11,-0.67
+2. overpaid (paid > billed),264,0.27,40241.09,43311.23,3070.14
+3. underpaid (paid < billed),39,0.04,10079.91,9880.83,-199.08
+4. items only (no payment),1,0.00,143.46,0.00,-143.46
+5. payments only (no items),772,0.78,0.00,162591.95,162591.95

@@ -1,0 +1,31 @@
+customer_region,weight_band,items,avg_freight_brl,freight_share_of_gmv_pct
+Center-West,1. < 0.5 kg,2689,17.97,18.4
+Center-West,2. 0.5-2 kg,2457,20.21,14.3
+Center-West,3. 2-10 kg,1165,30.26,13.2
+Center-West,4. 10+ kg,260,69.83,13.5
+Center-West,5. unknown,2,16.42,32.6
+Center-West,ALL WEIGHTS,6573,23.04,15.0
+North,1. < 0.5 kg,856,28.52,23.9
+North,2. 0.5-2 kg,713,32.80,16.3
+North,3. 2-10 kg,369,46.97,16.9
+North,4. 10+ kg,113,92.87,17.4
+North,ALL WEIGHTS,2051,36.87,18.5
+Northeast,1. < 0.5 kg,4221,25.03,21.2
+Northeast,2. 0.5-2 kg,3700,28.57,17.0
+Northeast,3. 2-10 kg,1921,40.67,15.2
+Northeast,4. 10+ kg,495,88.04,18.9
+Northeast,5. unknown,1,24.84,46.1
+Northeast,ALL WEIGHTS,10338,32.22,17.9
+South,1. < 0.5 kg,6185,16.37,18.2
+South,2. 0.5-2 kg,6093,18.68,14.6
+South,3. 2-10 kg,3018,27.21,13.3
+South,4. 10+ kg,724,59.37,13.6
+South,5. unknown,7,16.55,5.1
+South,ALL WEIGHTS,16027,21.23,15.0
+Southeast,1. < 0.5 kg,30520,12.98,15.2
+Southeast,2. 0.5-2 kg,28784,15.64,12.7
+Southeast,3. 2-10 kg,13764,22.87,11.7
+Southeast,4. 10+ kg,3687,46.76,13.3
+Southeast,5. unknown,8,12.71,28.0
+Southeast,ALL WEIGHTS,76763,17.37,13.2
+ALL REGIONS,ALL WEIGHTS,111752,19.99,14.2

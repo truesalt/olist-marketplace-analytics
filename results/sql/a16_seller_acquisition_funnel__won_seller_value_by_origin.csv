@@ -1,0 +1,11 @@
+origin,won_sellers,sellers_with_sales,gmv_first_90d_total_brl,gmv_90d_per_won_seller_brl,gmv_90d_per_selling_seller_brl,avg_days_to_close
+other,4,2,8571.73,2142.93,4285.87,15.3
+unknown,193,85,180551.29,935.50,2124.13,41.9
+organic_search,271,112,199471.39,736.06,1780.99,50.0
+paid_search,195,101,137461.49,704.93,1361.00,56.6
+referral,24,9,15817.53,659.06,1757.50,32.5
+email,15,6,9122.41,608.16,1520.40,52.2
+social,75,31,40273.26,536.98,1299.14,61.0
+direct_traffic,56,31,23295.31,415.99,751.46,31.1
+display,6,2,1020.68,170.11,510.34,10.3
+other_publicities,3,0,0.00,0.00,,39.3

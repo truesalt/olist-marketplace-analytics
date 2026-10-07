@@ -1,0 +1,3 @@
+method,lapsed_customers,buyers_2017
+EXCEPT,42370,43034
+NOT EXISTS,42370,43034

@@ -1,0 +1,3 @@
+method,delivered_orders_without_review,pct_of_valid_deliveries
+NOT EXISTS (anti-join),636,0.67
+LEFT JOIN ... IS NULL (anti-join),636,0.67

@@ -30,5 +30,6 @@ pct_delivered_without_date,orders,0.008,<= 1%,PASS
 valid_deliveries_with_negative_days,orders,0.000,= 0,PASS
 pct_customer_zips_missing_geolocation,customers,0.281,<= 1%,PASS
 payments_vs_items_gap_pct,order_items/order_payments,0.018,<= 2%,PASS
+text_values_with_control_chars,products/translation/reviews/leads,0.000,= 0,PASS
 max_orders_per_customer_unique_id,customers,17.000,info only,PASS
 order_status_values_outside_check_list,stg_orders,0.000,= 0,PASS

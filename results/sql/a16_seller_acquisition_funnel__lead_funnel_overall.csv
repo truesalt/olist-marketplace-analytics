@@ -1,0 +1,5 @@
+stage_order,stage,sellers,pct_of_mqls,step_conversion_pct
+1,MQL (marketing-qualified lead),8000,100.00,
+2,won (contract signed),842,10.53,10.5
+3,made a first sale,379,4.74,45.0
+4,active in >= 3 of first 6 months,182,2.28,48.0

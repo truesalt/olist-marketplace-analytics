@@ -1,0 +1,6 @@
+stage_order,stage,orders_measured,avg_hours,median_hours,avg_days
+1,purchase -> payment approved,94819,9.3,0.0,0.39
+2,approved -> handed to carrier,94819,67.3,44.0,2.80
+3,carrier -> delivered,94819,224.5,170.0,9.35
+4,purchase -> delivered (total),94819,301.9,246.0,12.58
+5,delivered date -> review created date,94183,10.7,24.0,0.45

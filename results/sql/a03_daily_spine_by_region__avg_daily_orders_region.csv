@@ -1,0 +1,6 @@
+customer_region,days_in_window,days_with_orders,zero_order_days,total_orders,avg_daily_orders_true,avg_daily_orders_naive,naive_overstatement_pct
+Southeast,608,602,6,67146,110.44,111.54,1.00
+South,608,600,8,13947,22.94,23.25,1.33
+Northeast,608,590,18,9272,15.25,15.72,3.05
+Center-West,608,584,24,5712,9.39,9.78,4.11
+North,608,538,70,1828,3.01,3.40,13.01

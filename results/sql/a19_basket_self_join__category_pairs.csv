@@ -1,0 +1,6 @@
+category_a,category_b,pair_orders,support_pct,confidence_a_to_b_pct,confidence_b_to_a_pct,lift,all_orders,multi_category_orders,pct_orders_multi_category
+bed_bath_table,home_confort,43,0.044,0.46,10.83,1.13,97905,783,0.80
+baby,cool_stuff,20,0.020,0.70,0.55,0.19,97905,783,0.80
+bed_bath_table,furniture_decor,68,0.069,0.72,1.07,0.11,97905,783,0.80
+furniture_decor,housewares,24,0.025,0.38,0.41,0.06,97905,783,0.80
+bed_bath_table,housewares,20,0.020,0.21,0.34,0.04,97905,783,0.80

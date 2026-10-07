@@ -13,9 +13,13 @@
 
 USE olist;
 
-/* CSV format notes (checked with `head -2` and `file` before writing this script):
-   - All files use '\n' line endings, comma separators, and quote only some fields
-     -> OPTIONALLY ENCLOSED BY '"'.
+/* CSV format notes (checked with `head -2`, `file` and `tr -cd '\r' < f | wc -c`):
+   - 9 files end lines with '\n'. product_category_name_translation.csv and
+     olist_order_reviews_dataset.csv end lines with '\r\n' (Windows) -> LINES TERMINATED BY '\r\n'.
+     macOS `file` did NOT flag this; a first load with '\n' left an invisible '\r' at the end of
+     every English category name (caught when pandas quoted those values in a CSV). Counting
+     carriage returns per file is the reliable check.
+   - Comma separators; only some fields are quoted -> OPTIONALLY ENCLOSED BY '"'.
    - Review messages contain newlines inside quotes; the enclosure handles them.
    - ESCAPED BY '' turns OFF MySQL's default backslash escaping. The data contains raw
      backslashes (e.g. a review ending in  :\"  and a seller city "rio de janeiro \rio de
@@ -60,7 +64,7 @@ LOAD DATA LOCAL INFILE 'data/raw/olist_order_reviews_dataset.csv'
 INTO TABLE stg_order_reviews
 CHARACTER SET utf8mb4
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' ESCAPED BY ''
-LINES TERMINATED BY '\n'
+LINES TERMINATED BY '\r\n'   -- Windows line endings
 IGNORE 1 LINES
 (review_id, order_id, review_score, review_comment_title, review_comment_message,
  review_creation_date, review_answer_timestamp);
@@ -108,7 +112,7 @@ LOAD DATA LOCAL INFILE 'data/raw/product_category_name_translation.csv'
 INTO TABLE stg_category_translation
 CHARACTER SET utf8mb4
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' ESCAPED BY ''
-LINES TERMINATED BY '\n'
+LINES TERMINATED BY '\r\n'   -- Windows line endings
 IGNORE 1 LINES
 (product_category_name, product_category_name_english);
 

@@ -89,15 +89,18 @@ SELECT COUNT(*) AS warm_payments FROM order_payments;
 
 -- "Rows examined" = growth of the Handler_read_* counters (rows the storage engine handed to
 -- the SQL layer). Reading the counter itself costs a few reads; measure that overhead once.
-SELECT SUM(VARIABLE_VALUE) INTO @h0 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
-SELECT SUM(VARIABLE_VALUE) INTO @h1 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h0
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h1
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 SET @h_overhead = @h1 - @h0;
 
 -- ---------------------------------------------------------------------------
 -- Q1 (a04 lane SLA core): valid deliveries per seller-state -> customer-state lane
 -- ---------------------------------------------------------------------------
 SELECT '>>> Q1 a04_lane_sla - BEFORE' AS benchmark;
-SELECT SUM(VARIABLE_VALUE) INTO @h0 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h0
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 EXPLAIN ANALYZE
 WITH order_lanes AS (
   SELECT DISTINCT o.order_id, s.state AS seller_state, c.state AS customer_state, o.is_late
@@ -121,7 +124,8 @@ FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 -- Q2 (a11 cohorts core): active customers by first-order cohort and month offset
 -- ---------------------------------------------------------------------------
 SELECT '>>> Q2 a11_cohorts - BEFORE' AS benchmark;
-SELECT SUM(VARIABLE_VALUE) INTO @h0 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h0
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 EXPLAIN ANALYZE
 WITH customer_months AS (
   SELECT DISTINCT c.customer_unique_id, DATE_FORMAT(o.purchase_ts, '%Y%m') AS ym
@@ -147,7 +151,8 @@ FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 -- Q3-Q6: selective look-ups (where secondary indexes are supposed to shine)
 -- ---------------------------------------------------------------------------
 SELECT '>>> Q3 one customer history - BEFORE' AS benchmark;
-SELECT SUM(VARIABLE_VALUE) INTO @h0 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h0
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 EXPLAIN ANALYZE
 SELECT o.order_id, o.purchase_ts, o.order_status
 FROM customers AS c
@@ -158,7 +163,8 @@ SELECT 'Q3 one_customer_history' AS benchmark, 'BEFORE' AS phase,
 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 
 SELECT '>>> Q4 one week of orders - BEFORE' AS benchmark;
-SELECT SUM(VARIABLE_VALUE) INTO @h0 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h0
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 EXPLAIN ANALYZE
 SELECT COUNT(*) AS orders_in_week
 FROM orders
@@ -168,7 +174,8 @@ SELECT 'Q4 one_week_orders' AS benchmark, 'BEFORE' AS phase,
 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 
 SELECT '>>> Q5 voucher payments - BEFORE' AS benchmark;
-SELECT SUM(VARIABLE_VALUE) INTO @h0 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h0
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 EXPLAIN ANALYZE
 SELECT COUNT(*) AS voucher_payments
 FROM order_payments
@@ -178,7 +185,8 @@ SELECT 'Q5 voucher_payments' AS benchmark, 'BEFORE' AS phase,
 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 
 SELECT '>>> Q6 lead of one seller - BEFORE' AS benchmark;
-SELECT SUM(VARIABLE_VALUE) INTO @h0 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h0
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 EXPLAIN ANALYZE
 SELECT mql_id, origin, won_date
 FROM seller_leads
@@ -214,7 +222,8 @@ ORDER BY table_name, index_name;
 -- STEP 3 - AFTER: identical queries
 -- ===========================================================================
 SELECT '>>> Q1 a04_lane_sla - AFTER' AS benchmark;
-SELECT SUM(VARIABLE_VALUE) INTO @h0 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h0
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 EXPLAIN ANALYZE
 WITH order_lanes AS (
   SELECT DISTINCT o.order_id, s.state AS seller_state, c.state AS customer_state, o.is_late
@@ -235,7 +244,8 @@ SELECT 'Q1 a04_lane_sla' AS benchmark, 'AFTER' AS phase,
 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 
 SELECT '>>> Q2 a11_cohorts - AFTER' AS benchmark;
-SELECT SUM(VARIABLE_VALUE) INTO @h0 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h0
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 EXPLAIN ANALYZE
 WITH customer_months AS (
   SELECT DISTINCT c.customer_unique_id, DATE_FORMAT(o.purchase_ts, '%Y%m') AS ym
@@ -258,7 +268,8 @@ SELECT 'Q2 a11_cohorts' AS benchmark, 'AFTER' AS phase,
 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 
 SELECT '>>> Q3 one customer history - AFTER' AS benchmark;
-SELECT SUM(VARIABLE_VALUE) INTO @h0 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h0
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 EXPLAIN ANALYZE
 SELECT o.order_id, o.purchase_ts, o.order_status
 FROM customers AS c
@@ -269,7 +280,8 @@ SELECT 'Q3 one_customer_history' AS benchmark, 'AFTER' AS phase,
 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 
 SELECT '>>> Q4 one week of orders - AFTER' AS benchmark;
-SELECT SUM(VARIABLE_VALUE) INTO @h0 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h0
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 EXPLAIN ANALYZE
 SELECT COUNT(*) AS orders_in_week
 FROM orders
@@ -279,7 +291,8 @@ SELECT 'Q4 one_week_orders' AS benchmark, 'AFTER' AS phase,
 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 
 SELECT '>>> Q5 voucher payments - AFTER' AS benchmark;
-SELECT SUM(VARIABLE_VALUE) INTO @h0 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h0
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 EXPLAIN ANALYZE
 SELECT COUNT(*) AS voucher_payments
 FROM order_payments
@@ -289,7 +302,8 @@ SELECT 'Q5 voucher_payments' AS benchmark, 'AFTER' AS phase,
 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 
 SELECT '>>> Q6 lead of one seller - AFTER' AS benchmark;
-SELECT SUM(VARIABLE_VALUE) INTO @h0 FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
+SELECT SUM(VARIABLE_VALUE) INTO @h0
+FROM performance_schema.session_status WHERE VARIABLE_NAME LIKE 'Handler_read%';
 EXPLAIN ANALYZE
 SELECT mql_id, origin, won_date
 FROM seller_leads

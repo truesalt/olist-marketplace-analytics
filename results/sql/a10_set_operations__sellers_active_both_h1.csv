@@ -1,0 +1,3 @@
+method,sellers_in_both,sellers_h1_2017,sellers_h1_2018
+INTERSECT,505,970,1994
+INNER JOIN,505,970,1994
