@@ -1,3 +1,5 @@
+Note (Code 1305): PROCEDURE olist.sp_drop_index_if_exists does not exist
+Note (Code 1305): PROCEDURE olist.sp_create_index_if_missing does not exist
 Table	Op	Msg_type	Msg_text
 olist.orders	analyze	status	OK
 olist.order_items	analyze	status	OK
@@ -25,80 +27,80 @@ warm_payments
 benchmark
 >>> Q1 a04_lane_sla - BEFORE
 EXPLAIN
--> Filter: (`count(0)` >= <cache>((@min_lane)))  (actual time=1143..1143 rows=70 loops=1)
-    -> Table scan on <temporary>  (actual time=1143..1143 rows=410 loops=1)
-        -> Aggregate using temporary table  (actual time=1143..1143 rows=410 loops=1)
-            -> Table scan on order_lanes  (cost=10366..10370 rows=127) (actual time=1106..1113 rows=95331 loops=1)
-                -> Materialize CTE order_lanes  (cost=10366..10366 rows=127) (actual time=1106..1106 rows=95331 loops=1)
-                    -> Table scan on <temporary>  (cost=10349..10353 rows=127) (actual time=1078..1098 rows=95331 loops=1)
-                        -> Temporary table with deduplication  (cost=10349..10349 rows=127) (actual time=1078..1078 rows=95331 loops=1)
-                            -> Nested loop inner join  (cost=10337 rows=127) (actual time=0.186..867 rows=108285 loops=1)
-                                -> Nested loop inner join  (cost=10271 rows=127) (actual time=0.163..654 rows=108285 loops=1)
-                                    -> Nested loop inner join  (cost=10182 rows=110) (actual time=0.144..364 rows=94834 loops=1)
-                                        -> Filter: ((o.is_valid_delivery = 1) and (o.order_status = 'delivered') and (o.purchase_ts >= <cache>((@ws))) and (o.purchase_ts < <cache>((@we_excl))))  (cost=10144 rows=110) (actual time=0.131..70.5 rows=94834 loops=1)
-                                            -> Table scan on o  (cost=10144 rows=99032) (actual time=0.123..34.5 rows=99441 loops=1)
-                                        -> Single-row index lookup on c using PRIMARY (customer_id=o.customer_id)  (cost=0.251 rows=1) (actual time=0.00295..0.00297 rows=1 loops=94834)
-                                    -> Index lookup on oi using PRIMARY (order_id=o.order_id)  (cost=0.69 rows=1.16) (actual time=0.00251..0.00293 rows=1.14 loops=94834)
-                                -> Single-row index lookup on s using PRIMARY (seller_id=oi.seller_id)  (cost=0.417 rows=1) (actual time=0.00182..0.00185 rows=1 loops=108285)
+-> Filter: (`count(0)` >= <cache>((@min_lane)))  (actual time=1138..1138 rows=70 loops=1)
+    -> Table scan on <temporary>  (actual time=1138..1138 rows=410 loops=1)
+        -> Aggregate using temporary table  (actual time=1138..1138 rows=410 loops=1)
+            -> Table scan on order_lanes  (cost=9170..9174 rows=109) (actual time=1101..1108 rows=95331 loops=1)
+                -> Materialize CTE order_lanes  (cost=9170..9170 rows=109) (actual time=1101..1101 rows=95331 loops=1)
+                    -> Table scan on <temporary>  (cost=9155..9159 rows=109) (actual time=1073..1092 rows=95331 loops=1)
+                        -> Temporary table with deduplication  (cost=9155..9155 rows=109) (actual time=1073..1073 rows=95331 loops=1)
+                            -> Nested loop inner join  (cost=9144 rows=109) (actual time=0.124..856 rows=108285 loops=1)
+                                -> Nested loop inner join  (cost=9088 rows=109) (actual time=0.109..646 rows=108285 loops=1)
+                                    -> Nested loop inner join  (cost=9017 rows=97) (actual time=0.0943..366 rows=94834 loops=1)
+                                        -> Filter: ((o.is_valid_delivery = 1) and (o.order_status = 'delivered') and (o.purchase_ts >= <cache>((@ws))) and (o.purchase_ts < <cache>((@we_excl))))  (cost=8983 rows=97) (actual time=0.0828..67.1 rows=94834 loops=1)
+                                            -> Table scan on o  (cost=8983 rows=87321) (actual time=0.0782..32.5 rows=99441 loops=1)
+                                        -> Single-row index lookup on c using PRIMARY (customer_id=o.customer_id)  (cost=0.251 rows=1) (actual time=0.00301..0.00303 rows=1 loops=94834)
+                                    -> Index lookup on oi using PRIMARY (order_id=o.order_id)  (cost=0.617 rows=1.12) (actual time=0.00247..0.00283 rows=1.14 loops=94834)
+                                -> Single-row index lookup on s using PRIMARY (seller_id=oi.seller_id)  (cost=0.418 rows=1) (actual time=0.00179..0.00181 rows=1 loops=108285)
 
 benchmark	phase	rows_examined
 Q1 a04_lane_sla	BEFORE	861482
 benchmark
 >>> Q2 a11_cohorts - BEFORE
 EXPLAIN
--> Table scan on <temporary>  (actual time=1557..1557 rows=207 loops=1)
-    -> Aggregate using temporary table  (actual time=1557..1557 rows=207 loops=1)
-        -> Nested loop inner join  (cost=30339 rows=0) (actual time=1204..1518 rows=96575 loops=1)
-            -> Table scan on cm  (cost=8221..8334 rows=8801) (actual time=642..660 rows=96575 loops=1)
-                -> Materialize CTE customer_months if needed  (cost=8221..8221 rows=8801) (actual time=642..642 rows=96575 loops=1)
-                    -> Table scan on <temporary>  (cost=7228..7341 rows=8801) (actual time=584..600 rows=96575 loops=1)
-                        -> Temporary table with deduplication  (cost=7228..7228 rows=8801) (actual time=584..584 rows=96575 loops=1)
-                            -> Nested loop inner join  (cost=6348 rows=8801) (actual time=0.0861..330 rows=97910 loops=1)
-                                -> Filter: ((o.order_status not in ('canceled','unavailable')) and (o.purchase_ts >= <cache>((@ws))) and (o.purchase_ts < <cache>((@we_excl))))  (cost=3189 rows=8801) (actual time=0.0791..57.6 rows=97910 loops=1)
-                                    -> Table scan on o  (cost=3189 rows=99032) (actual time=0.0767..28.5 rows=99441 loops=1)
-                                -> Single-row index lookup on c using PRIMARY (customer_id=o.customer_id)  (cost=0.259 rows=1) (actual time=0.00264..0.00267 rows=1 loops=97910)
-            -> Index lookup on co using <auto_key0> (customer_unique_id=cm.customer_unique_id)  (cost=0.25..2.5 rows=10) (actual time=0.00857..0.00877 rows=1 loops=96575)
-                -> Materialize CTE cohorts  (cost=0..0 rows=0) (actual time=562..562 rows=94707 loops=1)
-                    -> Table scan on <temporary>  (actual time=254..270 rows=94707 loops=1)
-                        -> Aggregate using temporary table  (actual time=254..254 rows=94706 loops=1)
-                            -> Table scan on customer_months  (cost=8221..8334 rows=8801) (actual time=0.00762..16.3 rows=96575 loops=1)
-                                -> Materialize CTE customer_months if needed (query plan printed elsewhere)  (cost=8221..8221 rows=8801) (never executed)
+-> Table scan on <temporary>  (actual time=1603..1603 rows=207 loops=1)
+    -> Aggregate using temporary table  (actual time=1603..1603 rows=207 loops=1)
+        -> Nested loop inner join  (cost=26718 rows=0) (actual time=1244..1564 rows=96575 loops=1)
+            -> Table scan on cm  (cost=7219..7318 rows=7760) (actual time=680..699 rows=96575 loops=1)
+                -> Materialize CTE customer_months if needed  (cost=7219..7219 rows=7760) (actual time=680..680 rows=96575 loops=1)
+                    -> Table scan on <temporary>  (cost=6343..6443 rows=7760) (actual time=621..637 rows=96575 loops=1)
+                        -> Temporary table with deduplication  (cost=6343..6343 rows=7760) (actual time=621..621 rows=96575 loops=1)
+                            -> Nested loop inner join  (cost=5567 rows=7760) (actual time=0.0857..352 rows=97910 loops=1)
+                                -> Filter: ((o.order_status not in ('canceled','unavailable')) and (o.purchase_ts >= <cache>((@ws))) and (o.purchase_ts < <cache>((@we_excl))))  (cost=2851 rows=7760) (actual time=0.0792..63.1 rows=97910 loops=1)
+                                    -> Table scan on o  (cost=2851 rows=87321) (actual time=0.0765..33.6 rows=99441 loops=1)
+                                -> Single-row index lookup on c using PRIMARY (customer_id=o.customer_id)  (cost=0.25 rows=1) (actual time=0.00281..0.00283 rows=1 loops=97910)
+            -> Index lookup on co using <auto_key0> (customer_unique_id=cm.customer_unique_id)  (cost=0.25..2.5 rows=10) (actual time=0.00863..0.00883 rows=1 loops=96575)
+                -> Materialize CTE cohorts  (cost=0..0 rows=0) (actual time=564..564 rows=94707 loops=1)
+                    -> Table scan on <temporary>  (actual time=256..272 rows=94707 loops=1)
+                        -> Aggregate using temporary table  (actual time=256..256 rows=94706 loops=1)
+                            -> Table scan on customer_months  (cost=7219..7318 rows=7760) (actual time=0.00883..16.7 rows=96575 loops=1)
+                                -> Materialize CTE customer_months if needed (query plan printed elsewhere)  (cost=7219..7219 rows=7760) (never executed)
 
 benchmark	phase	rows_examined
 Q2 a11_cohorts	BEFORE	1246570
 benchmark
 >>> Q3 one customer history - BEFORE
 EXPLAIN
--> Nested loop inner join  (cost=12946 rows=9133) (actual time=1.58..26.2 rows=17 loops=1)
-    -> Filter: (c.customer_unique_id = <cache>((@heavy_customer)))  (cost=9750 rows=8972) (actual time=1.56..26 rows=17 loops=1)
-        -> Table scan on c  (cost=9750 rows=89721) (actual time=0.124..21.4 rows=99441 loops=1)
-    -> Index lookup on o using fk_orders_customer (customer_id=c.customer_id)  (cost=0.255 rows=1.02) (actual time=0.00971..0.01 rows=1 loops=17)
+-> Nested loop inner join  (cost=12608 rows=8878) (actual time=1.34..25 rows=17 loops=1)
+    -> Filter: (c.customer_unique_id = <cache>((@heavy_customer)))  (cost=9355 rows=8878) (actual time=1.3..24.8 rows=17 loops=1)
+        -> Table scan on c  (cost=9355 rows=88778) (actual time=0.111..20.1 rows=99441 loops=1)
+    -> Index lookup on o using fk_orders_customer (customer_id=c.customer_id)  (cost=0.267 rows=1) (actual time=0.0149..0.0152 rows=1 loops=17)
 
 benchmark	phase	rows_examined
 Q3 one_customer_history	BEFORE	99478
 benchmark
 >>> Q4 one week of orders - BEFORE
 EXPLAIN
--> Aggregate: count(0)  (cost=11332 rows=1) (actual time=22.8..22.8 rows=1 loops=1)
-    -> Filter: ((orders.purchase_ts >= TIMESTAMP'2018-03-05 00:00:00') and (orders.purchase_ts < TIMESTAMP'2018-03-12 00:00:00'))  (cost=10232 rows=11001) (actual time=0.0522..22.8 rows=1643 loops=1)
-        -> Table scan on orders  (cost=10232 rows=99032) (actual time=0.0484..17.7 rows=99441 loops=1)
+-> Aggregate: count(0)  (cost=10052 rows=1) (actual time=23.3..23.3 rows=1 loops=1)
+    -> Filter: ((orders.purchase_ts >= TIMESTAMP'2018-03-05 00:00:00') and (orders.purchase_ts < TIMESTAMP'2018-03-12 00:00:00'))  (cost=9082 rows=9700) (actual time=0.0546..23.2 rows=1643 loops=1)
+        -> Table scan on orders  (cost=9082 rows=87321) (actual time=0.0507..18.2 rows=99441 loops=1)
 
 benchmark	phase	rows_examined
 Q4 one_week_orders	BEFORE	99444
 benchmark
 >>> Q5 voucher payments - BEFORE
 EXPLAIN
--> Aggregate: count(0)  (cost=11583 rows=1) (actual time=23.8..23.8 rows=1 loops=1)
-    -> Filter: (order_payments.payment_type = 'voucher')  (cost=10606 rows=9772) (actual time=0.0945..23.6 rows=5775 loops=1)
-        -> Table scan on order_payments  (cost=10606 rows=97722) (actual time=0.0897..19.2 rows=103883 loops=1)
+-> Aggregate: count(0)  (cost=12322 rows=1) (actual time=24.3..24.3 rows=1 loops=1)
+    -> Filter: (order_payments.payment_type = 'voucher')  (cost=11281 rows=10413) (actual time=0.1..24.1 rows=5775 loops=1)
+        -> Table scan on order_payments  (cost=11281 rows=104130) (actual time=0.0952..19.5 rows=103883 loops=1)
 
 benchmark	phase	rows_examined
 Q5 voucher_payments	BEFORE	103886
 benchmark
 >>> Q6 lead of one seller - BEFORE
 EXPLAIN
--> Filter: (seller_leads.seller_id = <cache>((@won_seller)))  (cost=877 rows=781) (actual time=0.0789..2.55 rows=1 loops=1)
-    -> Table scan on seller_leads  (cost=877 rows=7807) (actual time=0.0744..2.32 rows=8000 loops=1)
+-> Filter: (seller_leads.seller_id = <cache>((@won_seller)))  (cost=874 rows=778) (actual time=0.0893..2.73 rows=1 loops=1)
+    -> Table scan on seller_leads  (cost=874 rows=7784) (actual time=0.0846..2.48 rows=8000 loops=1)
 
 benchmark	phase	rows_examined
 Q6 seller_lead_lookup	BEFORE	8003
@@ -126,110 +128,110 @@ INDEXES AFTER	seller_leads	PRIMARY	mql_id
 benchmark
 >>> Q1 a04_lane_sla - AFTER
 EXPLAIN
--> Filter: (`count(0)` >= <cache>((@min_lane)))  (actual time=1080..1080 rows=70 loops=1)
-    -> Table scan on <temporary>  (actual time=1080..1080 rows=410 loops=1)
-        -> Aggregate using temporary table  (actual time=1080..1080 rows=410 loops=1)
-            -> Table scan on order_lanes  (cost=10949..10961 rows=794) (actual time=1043..1051 rows=95331 loops=1)
-                -> Materialize CTE order_lanes  (cost=10949..10949 rows=794) (actual time=1043..1043 rows=95331 loops=1)
-                    -> Table scan on <temporary>  (cost=10857..10869 rows=794) (actual time=1016..1035 rows=95331 loops=1)
-                        -> Temporary table with deduplication  (cost=10857..10857 rows=794) (actual time=1016..1016 rows=95331 loops=1)
-                            -> Nested loop inner join  (cost=10777 rows=794) (actual time=0.101..819 rows=108285 loops=1)
-                                -> Nested loop inner join  (cost=10367 rows=794) (actual time=0.0959..613 rows=108285 loops=1)
-                                    -> Nested loop inner join  (cost=10107 rows=681) (actual time=0.0893..339 rows=94834 loops=1)
-                                        -> Filter: ((o.is_valid_delivery = 1) and (o.order_status = 'delivered') and (o.purchase_ts >= <cache>((@ws))) and (o.purchase_ts < <cache>((@we_excl))))  (cost=9868 rows=681) (actual time=0.0818..67.5 rows=94834 loops=1)
-                                            -> Table scan on o  (cost=9868 rows=95394) (actual time=0.0796..32.1 rows=99441 loops=1)
-                                        -> Single-row index lookup on c using PRIMARY (customer_id=o.customer_id)  (cost=0.25 rows=1) (actual time=0.00272..0.00274 rows=1 loops=94834)
-                                    -> Index lookup on oi using PRIMARY (order_id=o.order_id)  (cost=0.266 rows=1.17) (actual time=0.00242..0.00277 rows=1.14 loops=94834)
-                                -> Single-row index lookup on s using PRIMARY (seller_id=oi.seller_id)  (cost=0.417 rows=1) (actual time=0.00175..0.00178 rows=1 loops=108285)
+-> Filter: (`count(0)` >= <cache>((@min_lane)))  (actual time=1141..1141 rows=70 loops=1)
+    -> Table scan on <temporary>  (actual time=1141..1141 rows=410 loops=1)
+        -> Aggregate using temporary table  (actual time=1141..1141 rows=410 loops=1)
+            -> Table scan on order_lanes  (cost=10634..10646 rows=746) (actual time=1105..1112 rows=95331 loops=1)
+                -> Materialize CTE order_lanes  (cost=10634..10634 rows=746) (actual time=1105..1105 rows=95331 loops=1)
+                    -> Table scan on <temporary>  (cost=10548..10560 rows=746) (actual time=1077..1096 rows=95331 loops=1)
+                        -> Temporary table with deduplication  (cost=10548..10548 rows=746) (actual time=1077..1077 rows=95331 loops=1)
+                            -> Nested loop inner join  (cost=10473 rows=746) (actual time=0.115..867 rows=108285 loops=1)
+                                -> Nested loop inner join  (cost=10088 rows=746) (actual time=0.102..657 rows=108285 loops=1)
+                                    -> Nested loop inner join  (cost=9848 rows=662) (actual time=0.0951..374 rows=94834 loops=1)
+                                        -> Filter: ((o.is_valid_delivery = 1) and (o.order_status = 'delivered') and (o.purchase_ts >= <cache>((@ws))) and (o.purchase_ts < <cache>((@we_excl))))  (cost=9616 rows=662) (actual time=0.0865..69.4 rows=94834 loops=1)
+                                            -> Table scan on o  (cost=9616 rows=92665) (actual time=0.0838..33.3 rows=99441 loops=1)
+                                        -> Single-row index lookup on c using PRIMARY (customer_id=o.customer_id)  (cost=0.25 rows=1) (actual time=0.00307..0.00309 rows=1 loops=94834)
+                                    -> Index lookup on oi using PRIMARY (order_id=o.order_id)  (cost=0.25 rows=1.13) (actual time=0.00243..0.00286 rows=1.14 loops=94834)
+                                -> Single-row index lookup on s using PRIMARY (seller_id=oi.seller_id)  (cost=0.417 rows=1) (actual time=0.00179..0.00182 rows=1 loops=108285)
 
 benchmark	phase	rows_examined
 Q1 a04_lane_sla	AFTER	861482
 benchmark
 >>> Q2 a11_cohorts - AFTER
 EXPLAIN
--> Table scan on <temporary>  (actual time=1562..1562 rows=207 loops=1)
-    -> Aggregate using temporary table  (actual time=1562..1562 rows=207 loops=1)
-        -> Nested loop inner join  (cost=83212 rows=0) (actual time=1206..1524 rows=96575 loops=1)
-            -> Table scan on cm  (cost=23286..23587 rows=23850) (actual time=655..674 rows=96575 loops=1)
-                -> Materialize CTE customer_months if needed  (cost=23286..23286 rows=23850) (actual time=655..655 rows=96575 loops=1)
-                    -> Table scan on <temporary>  (cost=20601..20901 rows=23850) (actual time=600..615 rows=96575 loops=1)
-                        -> Temporary table with deduplication  (cost=20601..20601 rows=23850) (actual time=600..600 rows=96575 loops=1)
-                            -> Nested loop inner join  (cost=18216 rows=23850) (actual time=0.0801..340 rows=97910 loops=1)
-                                -> Filter: ((o.order_status not in ('canceled','unavailable')) and (o.purchase_ts >= <cache>((@ws))) and (o.purchase_ts < <cache>((@we_excl))))  (cost=9868 rows=23850) (actual time=0.075..59.2 rows=97910 loops=1)
-                                    -> Table scan on o  (cost=9868 rows=95394) (actual time=0.0735..30 rows=99441 loops=1)
-                                -> Single-row index lookup on c using PRIMARY (customer_id=o.customer_id)  (cost=0.25 rows=1) (actual time=0.00272..0.00274 rows=1 loops=97910)
-            -> Index lookup on co using <auto_key0> (customer_unique_id=cm.customer_unique_id)  (cost=0.25..2.5 rows=10) (actual time=0.00847..0.00867 rows=1 loops=96575)
-                -> Materialize CTE cohorts  (cost=0..0 rows=0) (actual time=550..550 rows=94707 loops=1)
-                    -> Table scan on <temporary>  (actual time=250..266 rows=94707 loops=1)
-                        -> Aggregate using temporary table  (actual time=250..250 rows=94706 loops=1)
-                            -> Table scan on customer_months  (cost=23286..23587 rows=23850) (actual time=0.00829..16.4 rows=96575 loops=1)
-                                -> Materialize CTE customer_months if needed (query plan printed elsewhere)  (cost=23286..23286 rows=23850) (never executed)
+-> Table scan on <temporary>  (actual time=1587..1587 rows=207 loops=1)
+    -> Aggregate using temporary table  (actual time=1587..1587 rows=207 loops=1)
+        -> Nested loop inner join  (cost=80856 rows=0) (actual time=1225..1548 rows=96575 loops=1)
+            -> Table scan on cm  (cost=22629..22921 rows=23167) (actual time=668..689 rows=96575 loops=1)
+                -> Materialize CTE customer_months if needed  (cost=22629..22629 rows=23167) (actual time=668..668 rows=96575 loops=1)
+                    -> Table scan on <temporary>  (cost=20021..20313 rows=23167) (actual time=610..626 rows=96575 loops=1)
+                        -> Temporary table with deduplication  (cost=20021..20021 rows=23167) (actual time=610..610 rows=96575 loops=1)
+                            -> Nested loop inner join  (cost=17704 rows=23167) (actual time=0.0942..343 rows=97910 loops=1)
+                                -> Filter: ((o.order_status not in ('canceled','unavailable')) and (o.purchase_ts >= <cache>((@ws))) and (o.purchase_ts < <cache>((@we_excl))))  (cost=9595 rows=23167) (actual time=0.0887..59.7 rows=97910 loops=1)
+                                    -> Table scan on o  (cost=9595 rows=92665) (actual time=0.0871..30.4 rows=99441 loops=1)
+                                -> Single-row index lookup on c using PRIMARY (customer_id=o.customer_id)  (cost=0.25 rows=1) (actual time=0.00275..0.00277 rows=1 loops=97910)
+            -> Index lookup on co using <auto_key0> (customer_unique_id=cm.customer_unique_id)  (cost=0.25..2.5 rows=10) (actual time=0.00857..0.00877 rows=1 loops=96575)
+                -> Materialize CTE cohorts  (cost=0..0 rows=0) (actual time=557..557 rows=94707 loops=1)
+                    -> Table scan on <temporary>  (actual time=254..270 rows=94707 loops=1)
+                        -> Aggregate using temporary table  (actual time=254..254 rows=94706 loops=1)
+                            -> Table scan on customer_months  (cost=22629..22921 rows=23167) (actual time=0.0114..17.1 rows=96575 loops=1)
+                                -> Materialize CTE customer_months if needed (query plan printed elsewhere)  (cost=22629..22629 rows=23167) (never executed)
 
 benchmark	phase	rows_examined
 Q2 a11_cohorts	AFTER	1246570
 benchmark
 >>> Q3 one customer history - AFTER
 EXPLAIN
--> Nested loop inner join  (cost=15.4 rows=17) (actual time=0.0586..0.314 rows=17 loops=1)
-    -> Filter: (c.customer_unique_id = <cache>((@heavy_customer)))  (cost=3.18 rows=17) (actual time=0.0141..0.0213 rows=17 loops=1)
-        -> Covering index lookup on c using idx_customers_unique_id (customer_unique_id=(@heavy_customer))  (cost=3.18 rows=17) (actual time=0.0128..0.0154 rows=17 loops=1)
-    -> Index lookup on o using idx_orders_customer_id (customer_id=c.customer_id)  (cost=0.623 rows=1) (actual time=0.0167..0.0171 rows=1 loops=17)
+-> Nested loop inner join  (cost=17.1 rows=17) (actual time=0.0653..0.36 rows=17 loops=1)
+    -> Filter: (c.customer_unique_id = <cache>((@heavy_customer)))  (cost=3.18 rows=17) (actual time=0.0175..0.0249 rows=17 loops=1)
+        -> Covering index lookup on c using idx_customers_unique_id (customer_unique_id=(@heavy_customer))  (cost=3.18 rows=17) (actual time=0.0164..0.0191 rows=17 loops=1)
+    -> Index lookup on o using idx_orders_customer_id (customer_id=c.customer_id)  (cost=0.724 rows=1) (actual time=0.0193..0.0196 rows=1 loops=17)
 
 benchmark	phase	rows_examined
 Q3 one_customer_history	AFTER	52
 benchmark
 >>> Q4 one week of orders - AFTER
 EXPLAIN
--> Aggregate: count(0)  (cost=520 rows=1) (actual time=0.443..0.443 rows=1 loops=1)
-    -> Filter: ((orders.purchase_ts >= TIMESTAMP'2018-03-05 00:00:00') and (orders.purchase_ts < TIMESTAMP'2018-03-12 00:00:00'))  (cost=356 rows=1643) (actual time=0.0231..0.4 rows=1643 loops=1)
-        -> Covering index range scan on orders using idx_orders_purchase_ts over ('2018-03-05 00:00:00' <= purchase_ts < '2018-03-12 00:00:00')  (cost=356 rows=1643) (actual time=0.0221..0.251 rows=1643 loops=1)
+-> Aggregate: count(0)  (cost=520 rows=1) (actual time=0.448..0.448 rows=1 loops=1)
+    -> Filter: ((orders.purchase_ts >= TIMESTAMP'2018-03-05 00:00:00') and (orders.purchase_ts < TIMESTAMP'2018-03-12 00:00:00'))  (cost=356 rows=1643) (actual time=0.0187..0.404 rows=1643 loops=1)
+        -> Covering index range scan on orders using idx_orders_purchase_ts over ('2018-03-05 00:00:00' <= purchase_ts < '2018-03-12 00:00:00')  (cost=356 rows=1643) (actual time=0.0178..0.251 rows=1643 loops=1)
 
 benchmark	phase	rows_examined
 Q4 one_week_orders	AFTER	1644
 benchmark
 >>> Q5 voucher payments - AFTER
 EXPLAIN
--> Aggregate: count(0)  (cost=2460 rows=1) (actual time=1.33..1.33 rows=1 loops=1)
-    -> Covering index lookup on order_payments using idx_payments_type (payment_type='voucher')  (cost=1370 rows=10900) (actual time=0.0897..1.18 rows=5775 loops=1)
+-> Aggregate: count(0)  (cost=2460 rows=1) (actual time=1.39..1.39 rows=1 loops=1)
+    -> Covering index lookup on order_payments using idx_payments_type (payment_type='voucher')  (cost=1370 rows=10900) (actual time=0.089..1.24 rows=5775 loops=1)
 
 benchmark	phase	rows_examined
 Q5 voucher_payments	AFTER	5776
 benchmark
 >>> Q6 lead of one seller - AFTER
 EXPLAIN
--> Index lookup on seller_leads using idx_leads_seller (seller_id=(@won_seller)), with index condition: (seller_leads.seller_id = <cache>((@won_seller)))  (cost=1.09 rows=1) (actual time=0.0188..0.0192 rows=1 loops=1)
+-> Index lookup on seller_leads using idx_leads_seller (seller_id=(@won_seller)), with index condition: (seller_leads.seller_id = <cache>((@won_seller)))  (cost=1.09 rows=1) (actual time=0.0199..0.0203 rows=1 loops=1)
 
 benchmark	phase	rows_examined
 Q6 seller_lead_lookup	AFTER	2
 benchmark
 >>> SARGability (a) non-SARGable: WHERE YEAR(purchase_ts) = 2018
 id	select_type	table	partitions	type	possible_keys	key	key_len	ref	rows	filtered	Extra
-1	SIMPLE	orders	NULL	index	NULL	idx_orders_purchase_ts	5	NULL	95394	100.00	Using where; Using index
+1	SIMPLE	orders	NULL	index	NULL	idx_orders_purchase_ts	5	NULL	92665	100.00	Using where; Using index
 Note (Code 1003): /* select#1 */ select count(0) AS `COUNT(*)` from `olist`.`orders` where (year(`olist`.`orders`.`purchase_ts`) = 2018)
 EXPLAIN
--> Aggregate: count(0)  (cost=19882 rows=1) (actual time=19.4..19.4 rows=1 loops=1)
-    -> Filter: (year(orders.purchase_ts) = 2018)  (cost=10343 rows=95394) (actual time=7.65..18 rows=54011 loops=1)
-        -> Covering index scan on orders using idx_orders_purchase_ts  (cost=10343 rows=95394) (actual time=0.0331..13.4 rows=99441 loops=1)
+-> Aggregate: count(0)  (cost=19468 rows=1) (actual time=19.9..19.9 rows=1 loops=1)
+    -> Filter: (year(orders.purchase_ts) = 2018)  (cost=10202 rows=92665) (actual time=7.95..18.6 rows=54011 loops=1)
+        -> Covering index scan on orders using idx_orders_purchase_ts  (cost=10202 rows=92665) (actual time=0.0332..13.9 rows=99441 loops=1)
 
 benchmark
 >>> SARGability (b) SARGable: WHERE purchase_ts >= 2018-01-01 AND < 2019-01-01
 id	select_type	table	partitions	type	possible_keys	key	key_len	ref	rows	filtered	Extra
-1	SIMPLE	orders	NULL	range	idx_orders_purchase_ts,idx_orders_status_purchase	idx_orders_status_purchase	87	NULL	10597	100.00	Using where; Using index for skip scan
+1	SIMPLE	orders	NULL	range	idx_orders_purchase_ts,idx_orders_status_purchase	idx_orders_status_purchase	87	NULL	10294	100.00	Using where; Using index for skip scan
 Note (Code 1003): /* select#1 */ select count(0) AS `COUNT(*)` from `olist`.`orders` where ((`olist`.`orders`.`purchase_ts` >= TIMESTAMP'2018-01-01 00:00:00') and (`olist`.`orders`.`purchase_ts` < TIMESTAMP'2019-01-01 00:00:00'))
 EXPLAIN
--> Aggregate: count(0)  (cost=3995..3995 rows=1) (actual time=21.8..21.8 rows=1 loops=1)
-    -> Filter: ((orders.purchase_ts >= TIMESTAMP'2018-01-01 00:00:00') and (orders.purchase_ts < TIMESTAMP'2019-01-01 00:00:00'))  (cost=0.277..2936 rows=10597) (actual time=0.0257..20.3 rows=54011 loops=1)
-        -> Covering index skip scan on orders using idx_orders_status_purchase over '2018-01-01 00:00:00' <= purchase_ts < '2019-01-01 00:00:00'  (cost=0.277..2936 rows=10597) (actual time=0.025..15.4 rows=54011 loops=1)
+-> Aggregate: count(0)  (cost=3881..3881 rows=1) (actual time=22.5..22.5 rows=1 loops=1)
+    -> Filter: ((orders.purchase_ts >= TIMESTAMP'2018-01-01 00:00:00') and (orders.purchase_ts < TIMESTAMP'2019-01-01 00:00:00'))  (cost=0.277..2852 rows=10294) (actual time=0.0243..21 rows=54011 loops=1)
+        -> Covering index skip scan on orders using idx_orders_status_purchase over '2018-01-01 00:00:00' <= purchase_ts < '2019-01-01 00:00:00'  (cost=0.277..2852 rows=10294) (actual time=0.0235..16 rows=54011 loops=1)
 
 benchmark
 >>> SARGability (c) one month: DATE_FORMAT(...) = 2018-03 vs range
 EXPLAIN
--> Aggregate: count(0)  (cost=19882 rows=1) (actual time=24.8..24.8 rows=1 loops=1)
-    -> Filter: (date_format(orders.purchase_ts,'%Y-%m') = '2018-03')  (cost=10343 rows=95394) (actual time=14.3..24.6 rows=7211 loops=1)
-        -> Covering index scan on orders using idx_orders_purchase_ts  (cost=10343 rows=95394) (actual time=0.0265..12.2 rows=99441 loops=1)
+-> Aggregate: count(0)  (cost=19468 rows=1) (actual time=25.1..25.1 rows=1 loops=1)
+    -> Filter: (date_format(orders.purchase_ts,'%Y-%m') = '2018-03')  (cost=10202 rows=92665) (actual time=14.4..24.9 rows=7211 loops=1)
+        -> Covering index scan on orders using idx_orders_purchase_ts  (cost=10202 rows=92665) (actual time=0.0265..12.4 rows=99441 loops=1)
 
 EXPLAIN
--> Aggregate: count(0)  (cost=4384 rows=1) (actual time=1.88..1.88 rows=1 loops=1)
-    -> Filter: ((orders.purchase_ts >= TIMESTAMP'2018-03-01 00:00:00') and (orders.purchase_ts < TIMESTAMP'2018-04-01 00:00:00'))  (cost=2997 rows=13866) (actual time=0.033..1.69 rows=7211 loops=1)
-        -> Covering index range scan on orders using idx_orders_purchase_ts over ('2018-03-01 00:00:00' <= purchase_ts < '2018-04-01 00:00:00')  (cost=2997 rows=13866) (actual time=0.0327..1.03 rows=7211 loops=1)
+-> Aggregate: count(0)  (cost=4384 rows=1) (actual time=1.98..1.98 rows=1 loops=1)
+    -> Filter: ((orders.purchase_ts >= TIMESTAMP'2018-03-01 00:00:00') and (orders.purchase_ts < TIMESTAMP'2018-04-01 00:00:00'))  (cost=2997 rows=13866) (actual time=0.0332..1.78 rows=7211 loops=1)
+        -> Covering index range scan on orders using idx_orders_purchase_ts over ('2018-03-01 00:00:00' <= purchase_ts < '2018-04-01 00:00:00')  (cost=2997 rows=13866) (actual time=0.0328..1.09 rows=7211 loops=1)
 

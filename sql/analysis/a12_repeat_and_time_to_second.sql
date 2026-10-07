@@ -78,8 +78,9 @@ WITH valid_orders AS (
     AND EXISTS (SELECT 1 FROM order_items AS oi WHERE oi.order_id = o.order_id)
 ),
 first_orders AS (                -- ROW_NUMBER = 1 -> each person's first valid order
-  SELECT *
-  FROM (SELECT vo.*, ROW_NUMBER() OVER (PARTITION BY customer_unique_id
+  SELECT order_id, customer_unique_id, purchase_ts, purchase_date, is_late
+  FROM (SELECT vo.order_id, vo.customer_unique_id, vo.purchase_ts, vo.purchase_date, vo.is_late,
+               ROW_NUMBER() OVER (PARTITION BY customer_unique_id
                                         ORDER BY purchase_ts, order_id) AS order_seq
         FROM valid_orders AS vo) AS seq
   WHERE order_seq = 1
@@ -121,9 +122,10 @@ WITH valid_orders AS (
     AND EXISTS (SELECT 1 FROM order_items AS oi WHERE oi.order_id = o.order_id)
 ),
 first_orders AS (
-  SELECT *
-  FROM (SELECT vo.*, ROW_NUMBER() OVER (PARTITION BY customer_unique_id
-                                        ORDER BY purchase_ts, order_id) AS order_seq
+  SELECT order_id, customer_unique_id, purchase_ts, purchase_date
+  FROM (SELECT vo.order_id, vo.customer_unique_id, vo.purchase_ts, vo.purchase_date,
+               ROW_NUMBER() OVER (PARTITION BY customer_unique_id
+                                  ORDER BY purchase_ts, order_id) AS order_seq
         FROM valid_orders AS vo) AS seq
   WHERE order_seq = 1
 ),
@@ -167,9 +169,10 @@ WITH valid_orders AS (
     AND EXISTS (SELECT 1 FROM order_items AS oi WHERE oi.order_id = o.order_id)
 ),
 first_orders AS (
-  SELECT *
-  FROM (SELECT vo.*, ROW_NUMBER() OVER (PARTITION BY customer_unique_id
-                                        ORDER BY purchase_ts, order_id) AS order_seq
+  SELECT order_id, customer_unique_id, region, purchase_ts, purchase_date, is_late
+  FROM (SELECT vo.order_id, vo.customer_unique_id, vo.region, vo.purchase_ts, vo.purchase_date, vo.is_late,
+               ROW_NUMBER() OVER (PARTITION BY customer_unique_id
+                                  ORDER BY purchase_ts, order_id) AS order_seq
         FROM valid_orders AS vo) AS seq
   WHERE order_seq = 1
 ),

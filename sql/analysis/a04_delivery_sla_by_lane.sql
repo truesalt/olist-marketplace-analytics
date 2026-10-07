@@ -30,7 +30,8 @@ WITH order_lanes AS (          -- one row per (order, seller state); o/c/oi/s = 
     AND o.purchase_ts <  @we_excl
 ),
 ranked AS (                      -- position of each order within its lane, for the median
-  SELECT ol.*,
+  SELECT ol.order_id, ol.seller_region, ol.seller_state, ol.customer_region, ol.customer_state,
+         ol.is_late, ol.delivery_days, ol.delay_days,
          ROW_NUMBER() OVER (PARTITION BY seller_state, customer_state ORDER BY delivery_days) AS rn,
          COUNT(*)     OVER (PARTITION BY seller_state, customer_state)                        AS n
   FROM order_lanes AS ol
@@ -51,7 +52,9 @@ lane_stats AS (
 )
 SELECT DENSE_RANK() OVER (ORDER BY late_orders DESC) AS late_orders_rank,
        DENSE_RANK() OVER (ORDER BY late_pct DESC)    AS late_pct_rank,
-       ls.*
+       ls.seller_region, ls.seller_state, ls.customer_region, ls.customer_state,
+       ls.delivered_orders, ls.late_orders, ls.late_pct, ls.avg_delivery_days,
+       ls.median_delivery_days, ls.avg_days_late_when_late
 FROM lane_stats AS ls
 ORDER BY late_orders_rank, late_pct DESC;
 -- Reading the result: 70 lanes have >= 100 delivered orders. Volume drives the late COUNT: SP->SP is #1 with

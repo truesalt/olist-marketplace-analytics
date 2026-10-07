@@ -184,7 +184,7 @@ cp .env.example .env          # set MYSQL_PASSWORD (and MYSQL_PORT if not 3306)
 make venv                     # Python virtualenv + requirements
 make download                 # Kaggle CLI -> data/raw (11 CSVs)
 make db-user                  # one-time, as MySQL root: app user + local_infile etc.
-make all                      # db load core quality perf model analysis stats export (about 6 minutes)
+make all                      # db load core quality perf model analysis stats export (about 4 minutes)
 ```
 
 `make all` rebuilds everything from an empty database: staging load, transform, quality gate (fails on any FAIL),

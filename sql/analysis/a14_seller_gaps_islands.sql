@@ -42,7 +42,7 @@ island_bounds AS (               -- one row per streak
   GROUP BY seller_id, island_key
 ),
 island_gaps AS (                 -- inactive months after each streak (until next streak or window end)
-  SELECT ib.*,
+  SELECT ib.seller_id, ib.island_key, ib.start_idx, ib.end_idx, ib.island_len,
          LEAD(start_idx) OVER (PARTITION BY seller_id ORDER BY start_idx) AS next_start_idx,
          COALESCE(LEAD(start_idx) OVER (PARTITION BY seller_id ORDER BY start_idx), @last_idx + 1)
            - end_idx - 1                                                   AS gap_after

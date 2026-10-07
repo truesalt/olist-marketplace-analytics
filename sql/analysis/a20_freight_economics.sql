@@ -29,7 +29,7 @@ WITH item_freight AS (           -- valid-order items with seller->customer dist
     AND o.purchase_ts >= @ws AND o.purchase_ts < @we_excl
 ),
 banded AS (
-  SELECT f.*,
+  SELECT f.price, f.freight_value, f.is_valid_delivery, f.is_late, f.delivery_days, f.distance_km,
          CASE WHEN distance_km IS NULL THEN '6. unknown (zip not geocoded)'
               WHEN distance_km <  100  THEN '1. < 100 km'
               WHEN distance_km <  300  THEN '2. 100-299 km'

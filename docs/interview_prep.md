@@ -62,14 +62,14 @@ It uses `DELETE`, not `TRUNCATE`, because TRUNCATE is DDL and commits implicitly
 the CHECK constraint fired mid-load and core still held the previous full load (`06_…__rollback_test.csv`).
 
 **7. Did indexes speed up your queries?**
-Not the big ones. a04 and a11 read about 95% of orders, so a full scan is already optimal (1,187 → 1,107 ms, same rows
-examined). Selective look-ups improved 18-144×, e.g. one customer's history went from 99,478 to 52 rows examined (docs/performance.md).
+Not the big ones. a04 and a11 read about 95% of orders, so a full scan is already optimal (1,138 → 1,141 ms, same rows
+examined). Selective look-ups improved 17-134×, e.g. one customer's history went from 99,478 to 52 rows examined (docs/performance.md).
 The heavy aggregations are solved by marts instead.
 
 **8. What is SARGability?**
 Whether a predicate can use an index seek. `YEAR(purchase_ts) = 2018` wraps the column in a function, so every index entry
 must be evaluated. `purchase_ts >= '2018-01-01' AND purchase_ts < '2019-01-01'` can seek. For one month the range form was
-13× faster (24.8 → 1.9 ms).
+13× faster (25.1 → 2.0 ms).
 
 **9. Explain your recursive CTE.**
 Anchor = first date; recursive member = previous date + 1 day; stop condition in WHERE. It replaces `generate_series`.

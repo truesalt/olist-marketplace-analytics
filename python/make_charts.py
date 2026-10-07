@@ -119,20 +119,26 @@ def chart_review_by_delay() -> None:
 
 def chart_cohort_heatmap() -> None:
     df = read("a11_cohort_retention__cohort_matrix")
-    cols = [f"m{k}_pct" for k in range(1, 7)]           # M0 is 100% by definition -> omitted
+    cols = [f"m{k}_pct" for k in range(0, 7)]
     data = df[cols].to_numpy(dtype=float)
+    # M0 is 100% by definition: shown as a neutral column so it does not swamp the M1-M6 colour scale
+    shaded = data.copy()
+    shaded[:, 0] = np.nan
+    vmax = np.nanmax(shaded)
     cmap = LinearSegmentedColormap.from_list("blue_seq", BLUE_RAMP)
     cmap.set_bad("#f0efec")
-    fig, ax = plt.subplots(figsize=(7.5, 7.2))
-    im = ax.imshow(np.ma.masked_invalid(data), cmap=cmap, aspect="auto", vmin=0, vmax=np.nanmax(data))
+    fig, ax = plt.subplots(figsize=(8, 7.2))
+    im = ax.imshow(np.ma.masked_invalid(shaded), cmap=cmap, aspect="auto", vmin=0, vmax=vmax)
     for (i, j), v in np.ndenumerate(data):
         if np.isnan(v):
             ax.text(j, i, "–", ha="center", va="center", fontsize=8, color=INK_2)
+        elif j == 0:
+            ax.text(j, i, f"{v:.0f}", ha="center", va="center", fontsize=7.5, color=INK_2)
         else:
             ax.text(j, i, f"{v:.2f}", ha="center", va="center", fontsize=7.5,
-                    color="white" if v > 0.45 * np.nanmax(data) else INK)
+                    color="white" if v > 0.45 * vmax else INK)
     ax.set_xticks(range(len(cols)))
-    ax.set_xticklabels([f"M{k}" for k in range(1, 7)])
+    ax.set_xticklabels([f"M{k}" for k in range(0, 7)])
     ax.set_yticks(range(len(df)))
     ax.set_yticklabels([f"{m}  (n={n:,})" for m, n in zip(df["cohort_month"], df["cohort_size"])], fontsize=8)
     ax.set_xlabel("Months after first order")
@@ -141,7 +147,8 @@ def chart_cohort_heatmap() -> None:
     cbar = fig.colorbar(im, ax=ax, shrink=0.8)
     cbar.set_label("% of cohort ordering again that month", color=INK_2)
     ax.set_title("Fewer than 1 in 100 customers return in any later month")
-    save(fig, "03_cohort_heatmap.png", "results/sql/a11_cohort_retention__cohort_matrix.csv (– = not yet observable)")
+    save(fig, "03_cohort_heatmap.png",
+         "results/sql/a11_cohort_retention__cohort_matrix.csv (M0 = 100% by definition; – = not yet observable)")
 
 
 def chart_repeat_ci() -> None:

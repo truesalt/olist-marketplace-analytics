@@ -35,7 +35,7 @@ rfm_base AS (                    -- raw R, F, M per person
   GROUP BY customer_unique_id
 ),
 scored AS (
-  SELECT b.*,
+  SELECT b.customer_unique_id, b.recency_days, b.frequency, b.monetary,
          -- R: 5 = most recent fifth. Ties broken by id so the split is reproducible.
          NTILE(5) OVER (ORDER BY recency_days DESC, customer_unique_id) AS r_score,
          -- F: NTILE would scatter thousands of identical frequency=1 customers across
@@ -45,7 +45,7 @@ scored AS (
   FROM rfm_base AS b
 ),
 segmented AS (                   -- same mapping as v_dim_customer.rfm_segment
-  SELECT s.*,
+  SELECT s.customer_unique_id, s.recency_days, s.frequency, s.monetary, s.r_score, s.f_score, s.m_score,
          CASE
            WHEN f_score = 2 AND r_score >= 4  THEN 'Champions'
            WHEN f_score = 2                   THEN 'Loyal - lapsing'

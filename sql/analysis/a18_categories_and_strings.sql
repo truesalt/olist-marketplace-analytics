@@ -27,7 +27,7 @@ WITH category_sales AS (         -- GMV by the ORIGINAL Portuguese category
   GROUP BY p.category_pt
 ),
 labelled AS (                    -- English name if translated, else keep Portuguese (COALESCE)
-  SELECT cs.*,
+  SELECT cs.category_pt, cs.orders, cs.gmv,
          COALESCE(ct.category_en, cs.category_pt)                         AS category_en,
          REPLACE(LOWER(TRIM(COALESCE(ct.category_en, cs.category_pt))), '_', ' ') AS words
   FROM category_sales AS cs
@@ -56,7 +56,7 @@ WITH city_orders AS (            -- orders per cleaned customer city
   GROUP BY c.state, c.city_clean
 ),
 ranked AS (                      -- QUALIFY substitute: rank inside a CTE, filter outside
-  SELECT co.*,
+  SELECT co.state, co.city_clean, co.orders,
          ROW_NUMBER() OVER (PARTITION BY state ORDER BY orders DESC, city_clean) AS city_rank,
          ROUND(100 * orders / SUM(orders) OVER (PARTITION BY state), 1)          AS pct_of_state_orders
   FROM city_orders AS co

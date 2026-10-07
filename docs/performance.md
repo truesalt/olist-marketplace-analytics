@@ -5,7 +5,8 @@ raw output: [`results/perf/08_explain_analyze.txt`](../results/perf/08_explain_a
 
 **Environment:** MySQL 8.4.11 (Homebrew), Apple Silicon Mac, InnoDB with a warm buffer pool
 (each table is read once before measuring, so BEFORE and AFTER both run from memory).
-Timings vary by about ±10% between runs. Rows examined is deterministic.
+Numbers below are from the final clean rebuild (`make clean-db && make all`). Timings vary by about ±10% between runs
+(Q5 ranged 24-44 ms across runs). Rows examined is deterministic.
 
 ## Method
 
@@ -28,12 +29,12 @@ small cost of reading the counters themselves.
 
 | # | Query | Before: time (ms) | After: time (ms) | Before: rows examined | After: rows examined | What changed in the plan |
 |---|---|---:|---:|---:|---:|---|
-| Q1 | **a04 lane SLA** (valid deliveries per seller→customer state, full window) | 1,187 | 1,107 | 861,482 | 861,482 | Nothing material: still scans `orders`, joins by PK, dedups in a temp table |
-| Q2 | **a11 cohorts** (first-order month × activity month, full window) | 1,611 | 1,606 | 1,246,570 | 1,246,570 | Nothing material: scan + temp-table GROUP BY |
-| Q3 | One customer's order history (`customer_unique_id = ?`) | 24.8 | 0.71 | 99,478 | 52 | Full scan of `customers` → index lookup `idx_customers_unique_id` |
-| Q4 | Orders in one week (`purchase_ts` range) | 23.4 | 0.64 | 99,444 | 1,644 | Full scan → covering index range scan `idx_orders_purchase_ts` |
-| Q5 | Voucher payments (`payment_type = 'voucher'`) | 43.7 | 1.35 | 103,886 | 5,776 | Full scan → index lookup `idx_payments_type` |
-| Q6 | Lead record of one seller (`seller_id = ?`) | 3.16 | 0.022 | 8,003 | 2 | Full scan → index lookup `idx_leads_seller` |
+| Q1 | **a04 lane SLA** (valid deliveries per seller→customer state, full window) | 1,138 | 1,141 | 861,482 | 861,482 | Nothing material: still scans `orders`, joins by PK, dedups in a temp table |
+| Q2 | **a11 cohorts** (first-order month × activity month, full window) | 1,603 | 1,587 | 1,246,570 | 1,246,570 | Nothing material: scan + temp-table GROUP BY |
+| Q3 | One customer's order history (`customer_unique_id = ?`) | 25.0 | 0.36 | 99,478 | 52 | Full scan of `customers` → index lookup `idx_customers_unique_id` |
+| Q4 | Orders in one week (`purchase_ts` range) | 23.3 | 0.45 | 99,444 | 1,644 | Full scan → covering index range scan `idx_orders_purchase_ts` |
+| Q5 | Voucher payments (`payment_type = 'voucher'`) | 24.3 | 1.39 | 103,886 | 5,776 | Full scan → index lookup `idx_payments_type` |
+| Q6 | Lead record of one seller (`seller_id = ?`) | 2.73 | 0.020 | 8,003 | 2 | Full scan → index lookup `idx_leads_seller` |
 
 ### How to read this
 
@@ -44,7 +45,7 @@ small cost of reading the counters themselves.
   **pre-aggregation**, which is exactly what the `mart_*` tables do. `mart_lane_sla` turns the lane
   question into a 410-row table read.
 * **Indexes win on selective predicates.** These are the drill-downs a dashboard or app makes, e.g. "this
-  customer", "this week", "this seller". They run 18–144× faster and touch 10× to 4,000× fewer rows.
+  customer", "this week", "this seller". They run 17–134× faster and touch 18× to 4,000× fewer rows.
 * **Trade-off.** Each index costs disk space and slows every INSERT/UPDATE on that table, since the B-tree
   must be maintained. Here the data is loaded once in batch, so the read benefit wins.
 * **Implicit FK indexes.** After `CREATE INDEX idx_orders_customer_id ON orders(customer_id)`, InnoDB
@@ -60,9 +61,9 @@ constants, so the B-tree can **seek** to the first matching entry and stop after
 | Predicate | EXPLAIN `type` | Key / access | Rows read | Actual time (ms) |
 |---|---|---|---:|---:|
 | `WHERE YEAR(purchase_ts) = 2018` | `index` (full index scan) | `idx_orders_purchase_ts`, `YEAR()` evaluated per entry | 99,441 | 19.9 |
-| `WHERE purchase_ts >= '2018-01-01' AND purchase_ts < '2019-01-01'` | `range` | `idx_orders_status_purchase` (skip scan) | 54,011 | 22.0 |
-| `WHERE DATE_FORMAT(purchase_ts,'%Y-%m') = '2018-03'` | full covering index scan | `idx_orders_purchase_ts`, function per entry | 99,441 | 24.8 |
-| `WHERE purchase_ts >= '2018-03-01' AND purchase_ts < '2018-04-01'` | `range` | covering range scan `idx_orders_purchase_ts` | 7,211 | 1.9 |
+| `WHERE purchase_ts >= '2018-01-01' AND purchase_ts < '2019-01-01'` | `range` | `idx_orders_status_purchase` (skip scan) | 54,011 | 22.5 |
+| `WHERE DATE_FORMAT(purchase_ts,'%Y-%m') = '2018-03'` | full covering index scan | `idx_orders_purchase_ts`, function per entry | 99,441 | 25.1 |
+| `WHERE purchase_ts >= '2018-03-01' AND purchase_ts < '2018-04-01'` | `range` | covering range scan `idx_orders_purchase_ts` | 7,211 | 2.0 |
 
 * `YEAR(purchase_ts)` hides the column inside a function. The index is sorted by `purchase_ts`, not by
   `YEAR(purchase_ts)`, so MySQL must visit **every** entry and compute `YEAR()` on each one.

@@ -51,7 +51,7 @@ WITH seller_sales AS (             -- every seller with >= 1 valid sale in the w
   GROUP BY oi.seller_id
 ),
 with_last_sale AS (
-  SELECT ss.*,
+  SELECT ss.seller_id, ss.orders, ss.gmv,
          -- correlated scalar subquery: this seller's most recent valid sale
          (SELECT MAX(o2.purchase_ts)
           FROM order_items AS oi2

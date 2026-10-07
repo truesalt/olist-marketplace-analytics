@@ -47,7 +47,8 @@ seller_stats AS (                  -- each seller inside each category (enough v
   HAVING COUNT(*) >= @min_seller
 ),
 above_average AS (                 -- correlated subquery: compare with THIS seller's category
-  SELECT ss.*,
+  SELECT ss.seller_id, ss.category_en, ss.delivered_orders, ss.late_orders, ss.seller_late_pct,
+         ss.low_review_pct,
          (SELECT cs.category_late_pct FROM category_stats AS cs
           WHERE cs.category_en = ss.category_en)                 AS category_late_pct
   FROM seller_stats AS ss
@@ -56,7 +57,8 @@ above_average AS (                 -- correlated subquery: compare with THIS sel
                               WHERE cs.category_en = ss.category_en)
 ),
 ranked AS (                        -- rank inside each category; QUALIFY-style filter comes next
-  SELECT aa.*,
+  SELECT aa.seller_id, aa.category_en, aa.delivered_orders, aa.late_orders, aa.seller_late_pct,
+         aa.low_review_pct, aa.category_late_pct,
          DENSE_RANK() OVER (PARTITION BY category_en ORDER BY seller_late_pct DESC) AS rank_in_category
   FROM above_average AS aa
 )
@@ -100,7 +102,7 @@ seller_stats AS (
   HAVING COUNT(*) >= @min_seller
 ),
 flagged AS (
-  SELECT ss.*,
+  SELECT ss.seller_id, ss.category_en, ss.delivered_orders, ss.late_orders, ss.seller_late_pct,
          CASE WHEN ss.seller_late_pct > cs.category_late_pct THEN 1 ELSE 0 END AS is_above_avg,
          -- late orders beyond what the category's average rate would give on the same volume
          ss.late_orders - ss.delivered_orders * cs.category_late_pct / 100   AS excess_late_orders

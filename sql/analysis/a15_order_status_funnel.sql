@@ -113,7 +113,7 @@ stage_hours (stage_order, stage, hours) AS (   -- one row per order per stage
   FROM clean_deliveries WHERE review_created_date IS NOT NULL
 ),
 ranked AS (
-  SELECT sh.*,
+  SELECT sh.stage_order, sh.stage, sh.hours,
          ROW_NUMBER() OVER (PARTITION BY stage_order ORDER BY hours) AS rn,
          COUNT(*)     OVER (PARTITION BY stage_order)                AS n
   FROM stage_hours AS sh
