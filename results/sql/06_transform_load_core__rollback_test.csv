@@ -1,0 +1,2 @@
+test,planted_error,error_raised,orders_after_failed_call,order_items_after_failed_call,dq_log_rows_after_failed_call,conclusion
+transaction_rollback,"stg_orders row with order_status='bogus_status' (violates chk_orders_status)","ERROR 3819: Check constraint 'chk_orders_status' is violated.",99441,112650,29,"EXIT HANDLER rolled back the DELETEs and inserts already executed in sp_load_core; core kept its previous complete load"

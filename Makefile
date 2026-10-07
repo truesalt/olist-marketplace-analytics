@@ -22,10 +22,12 @@ PY_BOOT ?= $(shell command -v python3.11 2>/dev/null || command -v python3 2>/de
 MYSQL   ?= $(shell command -v mysql 2>/dev/null || echo /opt/homebrew/opt/mysql@8.4/bin/mysql)
 
 # Shell snippet (expanded inside recipes): load .env, write a private option file to $cnf.
+# default-character-set=utf8mb4 matters: SQL files contain accented literals (fn_strip_accents)
+# and a non-UTF-8 locale would otherwise make the client send them as latin1.
 LOAD_ENV_CNF = test -f .env || { echo "ERROR: .env missing - run: cp .env.example .env and set MYSQL_PASSWORD" >&2; exit 1; }; \
 	set -a; . ./.env; set +a; \
 	cnf="$$(mktemp)"; chmod 600 "$$cnf"; trap 'rm -f "$$cnf"' EXIT; \
-	printf '[client]\nhost=%s\nport=%s\nuser=%s\npassword="%s"\n' \
+	printf '[client]\nhost=%s\nport=%s\nuser=%s\npassword="%s"\ndefault-character-set=utf8mb4\n' \
 	  "$$MYSQL_HOST" "$$MYSQL_PORT" "$$MYSQL_USER" "$$MYSQL_PASSWORD" > "$$cnf"
 
 MYSQL_RUN = "$(MYSQL)" --defaults-extra-file="$$cnf" --local-infile=1
@@ -35,7 +37,7 @@ run_sql = @set -eo pipefail; $(LOAD_ENV_CNF); echo ">>> $(1)"; \
 	$(MYSQL_RUN) --table --show-warnings $(2) < "$(1)"
 
 .PHONY: help venv download db-user db load load-fallback core quality perf model \
-        analysis stats charts export all clean-db
+        analysis stats charts export all clean-db sql
 
 help:
 	@echo "Targets (run in this order the first time):"
@@ -45,6 +47,7 @@ help:
 	@echo "  make all           db load core quality perf model analysis stats export"
 	@echo "  make clean-db      DROP DATABASE (asks for confirmation; CONFIRM=yes skips the prompt)"
 	@echo "Individual steps: db load load-fallback core quality perf model analysis stats charts export"
+	@echo "  make sql FILE=sql/setup/07_data_quality_audit.sql   run any single SQL file"
 
 # ---------------------------------------------------------------------------
 # Environment
@@ -113,6 +116,11 @@ perf:
 model:
 	$(call run_sql,$(SETUP)/09_star_schema_views.sql,"$$MYSQL_DB")
 	$(call run_sql,$(SETUP)/10_marts.sql,"$$MYSQL_DB")
+
+# Run any single SQL file against the database, e.g. make sql FILE=sql/setup/04_functions.sql
+sql:
+	@test -n "$(FILE)" || { echo "usage: make sql FILE=path/to/file.sql" >&2; exit 1; }
+	$(call run_sql,$(FILE),"$$MYSQL_DB")
 
 # ---------------------------------------------------------------------------
 # Analysis, statistics, exports
