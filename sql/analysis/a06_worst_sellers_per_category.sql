@@ -87,7 +87,8 @@ WITH seller_category_orders AS (
     AND o.purchase_ts <  @we_excl
 ),
 category_stats AS (
-  SELECT category_en, SUM(is_late) AS category_late_orders, 100 * SUM(is_late) / COUNT(*) AS category_late_pct
+  SELECT category_en, SUM(is_late) AS category_late_orders,
+         100 * SUM(is_late) / COUNT(*) AS category_late_pct
   FROM seller_category_orders
   GROUP BY category_en
 ),
@@ -99,7 +100,10 @@ seller_stats AS (
   HAVING COUNT(*) >= @min_seller
 ),
 flagged AS (
-  SELECT ss.*, CASE WHEN ss.seller_late_pct > cs.category_late_pct THEN 1 ELSE 0 END AS is_above_avg
+  SELECT ss.*,
+         CASE WHEN ss.seller_late_pct > cs.category_late_pct THEN 1 ELSE 0 END AS is_above_avg,
+         -- late orders beyond what the category's average rate would give on the same volume
+         ss.late_orders - ss.delivered_orders * cs.category_late_pct / 100   AS excess_late_orders
   FROM seller_stats AS ss
   INNER JOIN category_stats AS cs ON cs.category_en = ss.category_en
 ),
@@ -108,22 +112,26 @@ per_category AS (
          COUNT(*)                                             AS qualifying_sellers,
          SUM(f.is_above_avg)                                  AS sellers_above_avg,
          SUM(CASE WHEN f.is_above_avg = 1 THEN f.late_orders ELSE 0 END) AS late_orders_from_above_avg,
+         SUM(CASE WHEN f.is_above_avg = 1 THEN f.excess_late_orders ELSE 0 END) AS excess_late_orders,
          MAX(cs.category_late_orders)                         AS category_late_orders
   FROM flagged AS f
   INNER JOIN category_stats AS cs ON cs.category_en = f.category_en
   GROUP BY f.category_en
 )
-SELECT category_en, qualifying_sellers, sellers_above_avg, late_orders_from_above_avg, category_late_orders,
+SELECT category_en, qualifying_sellers, sellers_above_avg, late_orders_from_above_avg,
+       ROUND(excess_late_orders, 0) AS excess_late_orders, category_late_orders,
        ROUND(100 * late_orders_from_above_avg / NULLIF(category_late_orders, 0), 1)
          AS share_of_category_late_pct
 FROM per_category
 UNION ALL                          -- grand total across categories
 SELECT 'ALL CATEGORIES', SUM(qualifying_sellers), SUM(sellers_above_avg), SUM(late_orders_from_above_avg),
+       ROUND(SUM(excess_late_orders), 0),
        (SELECT SUM(category_late_orders) FROM category_stats),
        ROUND(100 * SUM(late_orders_from_above_avg)
              / (SELECT SUM(category_late_orders) FROM category_stats), 1)
 FROM per_category
 ORDER BY late_orders_from_above_avg DESC;
 -- Reading the result: of 624 qualifying seller-category pairs, 257 are above their category average and they
---   produce 3,120 of all 6,533 late seller-category deliveries (47.8%). A seller-quality programme aimed at
---   ~41% of qualifying sellers addresses about half of late deliveries.
+--   produce 3,120 of all 6,533 late seller-category deliveries (47.8%); 1,006 of those are EXCESS late orders
+--   (beyond what the category's own late rate predicts on the same volume) - the realistic prize for a
+--   seller-quality programme aimed at ~41% of qualifying sellers.

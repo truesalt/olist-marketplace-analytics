@@ -143,6 +143,12 @@ def run_quality(engine) -> int:
     stats = run_file(engine, QUALITY_FILE)
     report = stats[0]["df"]
     print(tabulate(report, headers="keys", tablefmt="github", showindex=False))
+    # Also keep the cleaning-rule log from 06 next to the audit (source of docs/data_quality_log.md).
+    with engine.connect() as conn:
+        result = conn.exec_driver_sql("SELECT rule_id, table_name, description, rows_affected, logged_at "
+                                      "FROM dq_log ORDER BY log_id")
+        pd.DataFrame(result.fetchall(), columns=list(result.keys())).to_csv(
+            RESULTS_DIR / "06_transform_load_core__dq_log.csv", index=False)
     counts = report["status"].value_counts().to_dict()
     print(f"\nPASS={counts.get('PASS', 0)}  WARN={counts.get('WARN', 0)}  FAIL={counts.get('FAIL', 0)}")
     if counts.get("FAIL", 0):

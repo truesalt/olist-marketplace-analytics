@@ -1,0 +1,16 @@
+>>> sql/setup/02_load_staging.sql
++--------------------------+---------------+-------------+----------+--------+
+| table_name               | expected_rows | actual_rows | diff_pct | status |
++--------------------------+---------------+-------------+----------+--------+
+| stg_category_translation |            71 |          71 |     0.00 | OK     |
+| stg_closed_deals         |           842 |         842 |     0.00 | OK     |
+| stg_customers            |         99441 |       99441 |     0.00 | OK     |
+| stg_geolocation          |       1000163 |     1000163 |     0.00 | OK     |
+| stg_mql                  |          8000 |        8000 |     0.00 | OK     |
+| stg_order_items          |        112650 |      112650 |     0.00 | OK     |
+| stg_order_payments       |        103886 |      103886 |     0.00 | OK     |
+| stg_order_reviews        |         99224 |       99224 |     0.00 | OK     |
+| stg_orders               |         99441 |       99441 |     0.00 | OK     |
+| stg_products             |         32951 |       32951 |     0.00 | OK     |
+| stg_sellers              |          3095 |        3095 |     0.00 | OK     |
++--------------------------+---------------+-------------+----------+--------+

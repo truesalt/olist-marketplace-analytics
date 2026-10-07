@@ -1,0 +1,23 @@
+rec,metric,value,formula
+R1,late_orders_top10_lanes_window,4286.0,sum(late_orders) for late_orders_rank <= 10 (a04)
+R1,share_of_qualifying_lane_late_orders_pct,70.1818,late10 / sum(late_orders of all 70 qualifying lanes)
+R1,low_reviews_avoided_per_year,1369.0916,"late10 x (low-review rate late - on time, T1) x 12/20"
+R1,repeat_customers_gained_per_year,11.3228,"late10 x (repeat rate on time - late, T3; NOT significant) x 12/20"
+R1,repeat_gmv_gained_per_year_brl,1813.7921,"repeat customers gained x AOV (a01) x 12/20 - upper-bound style, single extra order each"
+R2,chronic_lanes_late_pct_ge_12,13.0,count of qualifying lanes with late_pct >= 12 (a04)
+R2,chronic_lane_late_orders_window,2299.0,sum(late_orders) on those lanes
+R2,avg_days_late_when_late_weighted,12.4101,late-order-weighted avg of avg_days_late_when_late
+R2,low_reviews_avoided_per_year_if_promise_met,734.3774,chronic late orders x T1 low-review gap x 12/20 (assumes a padded promise turns them on-time)
+R3,seller_category_pairs_above_avg,257.0,a06 ALL CATEGORIES row
+R3,late_orders_from_above_avg_window,3120.0,a06
+R3,excess_late_orders_window,1006.0,"late - delivered x category late rate, summed over above-average pairs (a06)"
+R3,low_reviews_avoided_per_year_if_brought_to_avg,321.35,excess late orders x T1 low-review gap x 12/20
+R4,n_per_arm,21174.0,T7 power analysis
+R4,avg_new_customers_per_month_2018,6459.125,"a12 customer table, 2018 first-order months"
+R4,incremental_repeat_customers_per_year_if_mde,308.4878,new customers/month x 12 x MDE (+20% relative = +0.40 pp)
+R4,incremental_gmv_per_year_brl_if_mde,49416.6623,"incremental repeat customers x AOV (one extra order each, before voucher cost)"
+R5,gmv90d_per_mql_brl_organic_search,86.8551,mql_to_won_pct x gmv_90d_per_won_seller (a16)
+R5,gmv90d_per_mql_brl_paid_search,86.7064,mql_to_won_pct x gmv_90d_per_won_seller (a16)
+R5,gmv90d_per_mql_brl_social,29.8561,mql_to_won_pct x gmv_90d_per_won_seller (a16)
+R5,gmv90d_per_mql_brl_direct_traffic,46.6741,mql_to_won_pct x gmv_90d_per_won_seller (a16)
+R5,gmv90d_gain_brl_per_1000_mqls_social_to_paid_search,56850.302,"1,000 x (GMV90d per MQL paid_search - social)"

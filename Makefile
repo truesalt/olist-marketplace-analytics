@@ -88,8 +88,10 @@ db:
 	$(call run_sql,$(SETUP)/00_create_database.sql,)
 	$(call run_sql,$(SETUP)/01_staging_schema.sql,"$$MYSQL_DB")
 
+# The row-count check printed at the end is also kept in results/sql/ (source of the README size table).
 load:
-	$(call run_sql,$(SETUP)/02_load_staging.sql,"$$MYSQL_DB") \
+	@set -o pipefail; $(MAKE) --no-print-directory sql FILE=$(SETUP)/02_load_staging.sql \
+	  | tee results/sql/02_load_staging__row_counts.txt \
 	  || { echo "LOAD DATA failed - try the pandas loader: make load-fallback" >&2; exit 1; }
 
 load-fallback:

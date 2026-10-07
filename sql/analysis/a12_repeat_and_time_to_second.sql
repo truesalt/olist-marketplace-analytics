@@ -22,7 +22,7 @@ SET @ws       = CAST(fn_cfg('window_start') AS DATE);
 SET @we       = CAST(fn_cfg('window_end') AS DATE);
 SET @we_excl  = @we + INTERVAL 1 DAY;
 SET @horizon  = CAST(fn_cfg('repeat_horizon_days') AS UNSIGNED);
-SET @eligible_cutoff = @we - INTERVAL @horizon DAY;                -- 2018-03-04 with defaults
+SET @eligible_cutoff = DATE_SUB(@we, INTERVAL @horizon DAY);       -- 2018-03-04 with defaults
 
 -- @query: time_to_second_order_dist
 WITH valid_orders AS (

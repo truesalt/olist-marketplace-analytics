@@ -147,7 +147,7 @@ gmv_90d AS (                     -- GMV in the 90 days that start with the first
   SELECT ss.seller_id, SUM(ss.item_gmv) AS gmv_first_90d
   FROM seller_sales AS ss
   INNER JOIN first_sale AS fs ON fs.seller_id = ss.seller_id
-  WHERE ss.sale_date < fs.first_sale_date + INTERVAL 90 DAY
+  WHERE ss.sale_date < DATE_ADD(fs.first_sale_date, INTERVAL 90 DAY)
   GROUP BY ss.seller_id
 )
 SELECT l.origin,

@@ -1,0 +1,30 @@
+rule_id,table_name,description,rows_affected,logged_at
+R01,customers/sellers/geo,"Zip prefixes shorter than 5 chars, left-padded with zeros (LPAD)",0,2026-10-07 15:45:24
+R02,orders,Empty timestamp strings converted to NULL (approved/carrier/delivered),4908,2026-10-07 15:45:25
+R02,products,Products with empty numeric attributes (lengths/photos/weight/dims) -> NULL,611,2026-10-07 15:45:25
+LOAD,category_translation,Rows loaded,71,2026-10-07 15:45:25
+R03,geolocation_zip,Raw geolocation points outside Brazil bounding box dropped,42,2026-10-07 15:45:25
+R03,geolocation_zip,"Zip prefixes aggregated (AVG lat/lng, mode city, n_points)",19010,2026-10-07 15:45:37
+LOAD,customers,Rows loaded,99441,2026-10-07 15:45:40
+LOAD,sellers,Rows loaded,3095,2026-10-07 15:45:40
+R04,customers,City names changed by fn_strip_accents (case/accents/spaces),450,2026-10-07 15:45:40
+R04,sellers,City names changed by fn_strip_accents (case/accents/spaces),14,2026-10-07 15:45:40
+R17,customers+sellers,Rows with region = Unknown after fn_region (expected 0),0,2026-10-07 15:45:40
+R05,products,Columns renamed: product_name_lenght/description_lenght -> name_length/description_length,32951,2026-10-07 15:45:40
+R06,products,Missing category -> category_pt sem_categoria / category_en unknown,610,2026-10-07 15:45:40
+R07,products,"No translation, kept Portuguese name: pc_gamer, portateis_cozinha_e_preparadores_de_alimentos",13,2026-10-07 15:45:40
+LOAD,orders,Rows loaded,99441,2026-10-07 15:45:42
+R11,orders,"Timestamp anomalies flagged ts_anomaly=1 (approved<purchase, carrier<approved, delivered<carrier/purchase)",1382,2026-10-07 15:45:42
+R12,orders,Status delivered but delivered_ts NULL (is_valid_delivery = 0),8,2026-10-07 15:45:42
+R13,orders,"Valid deliveries: delivery_days, delay_days, is_late derived",95097,2026-10-07 15:45:43
+R16,order_items,Items with non-positive price excluded,0,2026-10-07 15:45:43
+LOAD,order_items,Rows loaded,112650,2026-10-07 15:45:46
+R10,order_payments,payment_installments = 0 set to 1,2,2026-10-07 15:45:46
+R09,order_payments,Payments with payment_type = not_defined deleted,3,2026-10-07 15:45:47
+LOAD,order_payments,Rows loaded,103883,2026-10-07 15:45:47
+LOAD,order_reviews,Rows loaded (one per order),98673,2026-10-07 15:45:48
+R08,order_reviews,"Duplicate review rows removed (orders with >1 review, latest kept)",551,2026-10-07 15:45:48
+R08,order_reviews,review_id values reused across more than one order (info),789,2026-10-07 15:45:48
+R14,seller_leads,Blank lead origin set to unknown,60,2026-10-07 15:45:48
+LOAD,seller_leads,Rows loaded (all MQLs),8000,2026-10-07 15:45:48
+R15,seller_leads,Leads won (closed deal found); days_to_close = won_date - first_contact_date,842,2026-10-07 15:45:48

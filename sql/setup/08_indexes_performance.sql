@@ -3,7 +3,7 @@
    Purpose     : Measure query plans BEFORE and AFTER adding secondary indexes, and show
                  why a predicate must be SARGable (Search-ARGument-able) to use an index.
    Business Q  : setup / engineering - "will dashboards stay fast as data grows?"
-   SQL concepts: CREATE INDEX / DROP INDEX (idempotent via information_schema + dynamic SQL:
+   SQL concepts: ALTER TABLE ... ADD/DROP INDEX (idempotent via information_schema + dynamic SQL:
                  PREPARE / EXECUTE / DEALLOCATE), composite index, ANALYZE TABLE,
                  EXPLAIN, EXPLAIN ANALYZE, SARGability, handler counters
                  (performance_schema.session_status) as "rows examined"
@@ -28,7 +28,7 @@ MODIFIES SQL DATA
 BEGIN
   IF EXISTS (SELECT 1 FROM information_schema.statistics
              WHERE table_schema = DATABASE() AND table_name = p_table AND index_name = p_index) THEN
-    SET @ddl = CONCAT('DROP INDEX `', p_index, '` ON `', p_table, '`');
+    SET @ddl = CONCAT('ALTER TABLE `', p_table, '` DROP INDEX `', p_index, '`');
     PREPARE stmt FROM @ddl;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
@@ -41,7 +41,7 @@ MODIFIES SQL DATA
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.statistics
                  WHERE table_schema = DATABASE() AND table_name = p_table AND index_name = p_index) THEN
-    SET @ddl = CONCAT('CREATE INDEX `', p_index, '` ON `', p_table, '` (', p_columns, ')');
+    SET @ddl = CONCAT('ALTER TABLE `', p_table, '` ADD INDEX `', p_index, '` (', p_columns, ')');
     PREPARE stmt FROM @ddl;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
