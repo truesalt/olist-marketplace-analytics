@@ -27,7 +27,8 @@ rolling it out, because the observed voucher effect is not significant. → [doc
 ![Late deliveries turn 5-star reviews into 1-star reviews](results/charts/02_review_by_delay.png)
 
 *Power BI dashboard (2 pages: Marketplace Ops Overview · Customers & Seller Supply).* The model, M scripts, 29 DAX
-measures, theme and a click-by-click build guide are in [`powerbi/`](powerbi/BUILD_GUIDE.md). Live link, screenshots
+measures, theme and a click-by-click build guide are in [`powerbi/`](powerbi/BUILD_GUIDE.md)
+(or let Claude Code build it on Windows: [powerbi/CLAUDE_CODE_WINDOWS.md](powerbi/CLAUDE_CODE_WINDOWS.md)). Live link, screenshots
 (`powerbi/screenshots/`) and PDF (`powerbi/olist_dashboard.pdf`) are added after the Windows build:
 **live dashboard: coming soon** · **PDF: coming soon**.
 

@@ -1,7 +1,8 @@
 # Power BI build guide (click by click)
 
 Builds `olist_dashboard.pbix`: **2 pages, 16:9 (1280 × 720)**, from the CSVs exported by `make export`.
-Estimated time: **3-4 hours** the first time.
+Estimated time: **3-4 hours** the first time. Want Claude Code to do the clicking? See
+[CLAUDE_CODE_WINDOWS.md](CLAUDE_CODE_WINDOWS.md) (MCP for the model, PBIP files for the pages).
 
 Files you need from this repo:
 
