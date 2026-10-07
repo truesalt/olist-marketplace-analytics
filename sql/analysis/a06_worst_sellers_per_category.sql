@@ -8,7 +8,8 @@
                  top-N per group by filtering a window result in an outer CTE (MySQL has no
                  QUALIFY), UNION ALL for a grand-total row
    Output      : worst_sellers_top3, sellers_above_category_avg_count
-   Run with : mysql --local-infile=1 -u $MYSQL_USER -p olist < sql/analysis/a06_worst_sellers_per_category.sql
+   Run with    : mysql --local-infile=1 -u $MYSQL_USER -p olist \
+                   < sql/analysis/a06_worst_sellers_per_category.sql
    ========================================================================== */
 
 SET @ws         = CAST(fn_cfg('window_start') AS DATE);

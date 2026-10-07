@@ -11,7 +11,8 @@
                  eligibility rule against right-censoring
    Output      : time_to_second_order_dist, repeat_by_first_order_late,
                  repeat_by_first_order_voucher, customer_level_for_stats
-   Run with  : mysql --local-infile=1 -u $MYSQL_USER -p olist < sql/analysis/a12_repeat_and_time_to_second.sql
+   Run with    : mysql --local-infile=1 -u $MYSQL_USER -p olist \
+                   < sql/analysis/a12_repeat_and_time_to_second.sql
    Definitions : repeat_180d = a valid order on a LATER calendar day within 180 days of the first
                  order (same-day extra checkouts happen before delivery, so they are not a "return").
                  eligible = first order on/before window_end - 180 days, so every eligible customer

@@ -7,7 +7,8 @@
                  window MEDIAN of days-to-close per origin, GROUP_CONCAT (STRING_AGG substitute)
                  with ORDER BY + SEPARATOR, unpivot via UNION ALL, LAG step conversion
    Output      : lead_funnel_by_origin, lead_funnel_overall, won_seller_value_by_origin
-   Run with  : mysql --local-infile=1 -u $MYSQL_USER -p olist < sql/analysis/a16_seller_acquisition_funnel.sql
+   Run with    : mysql --local-infile=1 -u $MYSQL_USER -p olist \
+                   < sql/analysis/a16_seller_acquisition_funnel.sql
    Caveat      : leads signed late (2018) had less time to make a first sale before the data ends.
    ========================================================================== */
 
