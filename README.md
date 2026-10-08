@@ -25,7 +25,7 @@ rolling it out, because the observed voucher effect is not significant. → [doc
 ## Dashboard
 
 **Power BI, 2 pages** · [PDF](powerbi/olist_dashboard.pdf) · [.pbix](powerbi/olist_dashboard.pbix) ·
-[Power BI project (PBIP, diff-friendly)](powerbi/olist_dashboard.pbip) · **live dashboard: coming soon**
+[Power BI project (PBIP, diff-friendly)](powerbi/olist_dashboard.pbip)
 
 **Marketplace Ops Overview**: GMV trend, delivery SLA by seller → customer region, worst sellers by late orders (Top-N),
 and how review scores collapse as deliveries run late.
@@ -235,6 +235,6 @@ olist-marketplace-analytics/
 ## Author
 
 **Nandhagopan Nair**, B.Tech, IIT (BHU) Varanasi (2027)
-LinkedIn: *add link* · GitHub: *add link*
+[LinkedIn](https://www.linkedin.com/in/nandhagopan-nair/) · [GitHub](https://github.com/truesalt)
 
 Code: MIT ([LICENSE](LICENSE)). Data: © Olist, CC BY-NC-SA 4.0 (not included in this repository).
