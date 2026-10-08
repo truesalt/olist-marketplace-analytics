@@ -1,0 +1,29 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["DataFolder","dim_date","dim_customer","dim_seller","dim_product","fact_order_items","fact_seller_leads","mart_cohort_retention","mart_pareto_sellers","mart_lane_sla"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table dim_date
+ref table dim_customer
+ref table dim_seller
+ref table dim_product
+ref table fact_order_items
+ref table fact_seller_leads
+ref table mart_cohort_retention
+ref table mart_pareto_sellers
+ref table mart_lane_sla
+ref table _Measures
+ref table 'Top N'
+
+ref cultureInfo en-US
+

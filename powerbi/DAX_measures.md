@@ -132,9 +132,15 @@ Power BI creates the table `'Top N'` with column `[Top N]` and measure `[Top N V
 
 ```DAX
 Seller Late Rank =
-RANKX ( ALLSELECTED ( dim_seller[seller_id] ), [Late Orders], , DESC, DENSE )
+RANKX ( ALLSELECTED ( dim_seller ), [Late Orders], , DESC, DENSE )
 Show In Top N = IF ( [Seller Late Rank] <= 'Top N'[Top N Value], 1, 0 )
 ```
+
+> Why `ALLSELECTED ( dim_seller )` and not `ALLSELECTED ( dim_seller[seller_id] )`: the Top-N table shows
+> `dim_seller[seller_code]`. Ranking over the seller_id column alone leaves the row's seller_code filter in place,
+> so every other seller evaluates to BLANK and every row ranks 1 (all 3,095 sellers pass `Show In Top N = 1`).
+> Iterating the whole (3,095-row) table replaces the filters on all its columns, so the rank is correct whichever
+> seller column the visual uses.
 
 ## Seller acquisition funnel (from `fact_seller_leads`)
 

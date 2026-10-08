@@ -1,0 +1,107 @@
+table mart_lane_sla
+	lineageTag: 3e45d5bf-01e8-5ae7-b3cc-88861dcb1680
+
+	column seller_region
+		dataType: string
+		lineageTag: fc3e0742-6a7a-524e-9d70-419296980db6
+		summarizeBy: none
+		sourceColumn: seller_region
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_region
+		dataType: string
+		lineageTag: a667ee99-488d-5a6f-ae50-5c8280c0392a
+		summarizeBy: none
+		sourceColumn: customer_region
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_state
+		dataType: string
+		lineageTag: 6b031f81-1325-5135-ba29-caaebef56de5
+		summarizeBy: none
+		sourceColumn: seller_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_state
+		dataType: string
+		lineageTag: 6c95af38-2f40-5996-9701-7716f67a5a36
+		summarizeBy: none
+		sourceColumn: customer_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivered_orders
+		dataType: int64
+		formatString: #,##0
+		lineageTag: 9b3e9164-4223-5c81-908a-4a345d42865c
+		summarizeBy: sum
+		sourceColumn: delivered_orders
+
+		annotation SummarizationSetBy = Automatic
+
+	column late_orders
+		dataType: int64
+		formatString: #,##0
+		lineageTag: 4b5685b3-c02b-5a13-a144-99aaec7c7920
+		summarizeBy: sum
+		sourceColumn: late_orders
+
+		annotation SummarizationSetBy = Automatic
+
+	column late_pct
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 9c67d25c-ea75-52ab-8a89-d7b893cd210f
+		summarizeBy: none
+		sourceColumn: late_pct
+
+		annotation SummarizationSetBy = User
+
+	column avg_delivery_days
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: d0aa9f7d-a9ec-552c-ae50-fad008fb0dc8
+		summarizeBy: none
+		sourceColumn: avg_delivery_days
+
+		annotation SummarizationSetBy = User
+
+	column median_delivery_days
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 9f7e037a-587a-54f1-ab6d-59f4d1e526a3
+		summarizeBy: none
+		sourceColumn: median_delivery_days
+
+		annotation SummarizationSetBy = User
+
+	partition mart_lane_sla = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "mart_lane_sla.csv"),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {
+				        {"seller_region", type text},
+				        {"customer_region", type text},
+				        {"seller_state", type text},
+				        {"customer_state", type text},
+				        {"delivered_orders", Int64.Type},
+				        {"late_orders", Int64.Type},
+				        {"late_pct", type number},
+				        {"avg_delivery_days", type number},
+				        {"median_delivery_days", type number}
+				    }, "en-US"),
+				    // Column names are already clean snake_case: nothing to rename (kept as an explicit step).
+				    Renamed = Table.RenameColumns(Typed, {})
+				in
+				    Renamed
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

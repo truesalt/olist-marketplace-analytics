@@ -1,0 +1,73 @@
+table mart_pareto_sellers
+	lineageTag: 3923362a-eeef-5846-927b-fcd7cfddafbb
+
+	column seller_id
+		dataType: string
+		isHidden
+		lineageTag: 4dd2206a-a472-5c66-8edf-e71f788d7633
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column gmv
+		dataType: decimal
+		formatString: \R$ #,##0.00
+		lineageTag: 7ce2180b-64d3-53d7-b9f3-4f24e2a1d4e1
+		summarizeBy: sum
+		sourceColumn: gmv
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	column gmv_rank
+		dataType: int64
+		formatString: 0
+		lineageTag: d1c48651-07fa-5569-a574-26b06dcab750
+		summarizeBy: none
+		sourceColumn: gmv_rank
+
+		annotation SummarizationSetBy = User
+
+	column cum_gmv_share
+		dataType: double
+		formatString: 0.0%
+		lineageTag: b37911de-3904-5808-bb97-7742d33010d4
+		summarizeBy: none
+		sourceColumn: cum_gmv_share
+
+		annotation SummarizationSetBy = User
+
+	column seller_pct_rank
+		dataType: double
+		formatString: 0%
+		lineageTag: d6037e0a-75be-5dde-8e99-2d2b0c87b31d
+		summarizeBy: none
+		sourceColumn: seller_pct_rank
+
+		annotation SummarizationSetBy = User
+
+	partition mart_pareto_sellers = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "mart_pareto_sellers.csv"),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {
+				        {"seller_id", type text},
+				        {"gmv", Currency.Type},
+				        {"gmv_rank", Int64.Type},
+				        {"cum_gmv_share", type number},
+				        {"seller_pct_rank", type number}
+				    }, "en-US"),
+				    // Column names are already clean snake_case: nothing to rename (kept as an explicit step).
+				    Renamed = Table.RenameColumns(Typed, {})
+				in
+				    Renamed
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

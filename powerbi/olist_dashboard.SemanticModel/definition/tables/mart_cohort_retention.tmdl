@@ -1,0 +1,70 @@
+table mart_cohort_retention
+	lineageTag: 4d21ffba-6237-56cb-807f-430aa93a54e6
+
+	column cohort_month
+		dataType: string
+		lineageTag: 478c9f06-f785-5e5d-a8d7-f26f6f5ae9b7
+		summarizeBy: none
+		sourceColumn: cohort_month
+
+		annotation SummarizationSetBy = Automatic
+
+	column months_since
+		dataType: int64
+		formatString: 0
+		lineageTag: 900e221d-0e6b-5c4a-b0b0-e40a8b1a170a
+		summarizeBy: none
+		sourceColumn: months_since
+
+		annotation SummarizationSetBy = User
+
+	column active_customers
+		dataType: int64
+		formatString: #,##0
+		lineageTag: 33fcf089-b5bd-5ec4-93ca-0a112d300aea
+		summarizeBy: sum
+		sourceColumn: active_customers
+
+		annotation SummarizationSetBy = Automatic
+
+	column cohort_size
+		dataType: int64
+		formatString: #,##0
+		lineageTag: acbd1bff-65b7-5f81-9521-380f72de83a6
+		summarizeBy: sum
+		sourceColumn: cohort_size
+
+		annotation SummarizationSetBy = Automatic
+
+	column retention_pct
+		dataType: double
+		formatString: 0.0%
+		lineageTag: c0a6df68-fed4-5bb7-aa54-73a583d3c863
+		summarizeBy: none
+		sourceColumn: retention_pct
+
+		annotation SummarizationSetBy = User
+
+	partition mart_cohort_retention = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "mart_cohort_retention.csv"),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {
+				        {"cohort_month", type text},
+				        {"months_since", Int64.Type},
+				        {"active_customers", Int64.Type},
+				        {"cohort_size", Int64.Type},
+				        {"retention_pct", type number}
+				    }, "en-US"),
+				    // Column names are already clean snake_case: nothing to rename (kept as an explicit step).
+				    Renamed = Table.RenameColumns(Typed, {})
+				in
+				    Renamed
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

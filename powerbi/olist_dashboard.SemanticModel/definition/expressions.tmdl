@@ -1,0 +1,7 @@
+expression DataFolder = "C:\olist\powerbi\data\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: e1bc5a30-d32b-5cd4-8310-b2c65fd7208b
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "customers_seller_supply",
+  "displayName": "Customers & Seller Supply",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "color": {
+            "solid": {
+              "color": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'#F3F5F9'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0.0D"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspace": [
+      {
+        "properties": {
+          "color": {
+            "solid": {
+              "color": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'#F3F5F9'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0.0D"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "5b546cfa487836f78c2d",
+      "target": "c9fb1fcfbc02fda8877a",
+      "type": "NoFilter"
+    },
+    {
+      "source": "5b546cfa487836f78c2d",
+      "target": "a18dc2564b700be391b8",
+      "type": "NoFilter"
+    },
+    {
+      "source": "5b546cfa487836f78c2d",
+      "target": "e9054368dd2bec516e7c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "5b546cfa487836f78c2d",
+      "target": "4f58e316db82a76ebc4a",
+      "type": "NoFilter"
+    }
+  ]
+}

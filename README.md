@@ -24,13 +24,21 @@ rolling it out, because the observed voucher effect is not significant. → [doc
 
 ## Dashboard
 
-![Late deliveries turn 5-star reviews into 1-star reviews](results/charts/02_review_by_delay.png)
+**Power BI, 2 pages** · [PDF](powerbi/olist_dashboard.pdf) · [.pbix](powerbi/olist_dashboard.pbix) ·
+[Power BI project (PBIP, diff-friendly)](powerbi/olist_dashboard.pbip) · **live dashboard: coming soon**
 
-*Power BI dashboard (2 pages: Marketplace Ops Overview · Customers & Seller Supply).* The model, M scripts, 29 DAX
-measures, theme and a click-by-click build guide are in [`powerbi/`](powerbi/BUILD_GUIDE.md)
-(or let Claude Code build it on Windows: [powerbi/CLAUDE_CODE_WINDOWS.md](powerbi/CLAUDE_CODE_WINDOWS.md)). Live link, screenshots
-(`powerbi/screenshots/`) and PDF (`powerbi/olist_dashboard.pdf`) are added after the Windows build:
-**live dashboard: coming soon** · **PDF: coming soon**.
+**Marketplace Ops Overview**: GMV trend, delivery SLA by seller → customer region, worst sellers by late orders (Top-N),
+and how review scores collapse as deliveries run late.
+
+![Marketplace Ops Overview](powerbi/screenshots/page1_overview.png)
+
+**Customers & Seller Supply**: cohort retention, repeat rate by first-order experience, seller concentration (Pareto)
+and the seller acquisition funnel by channel.
+
+![Customers & Seller Supply](powerbi/screenshots/page2_customers_supply.png)
+
+Star schema (4 dimensions around an item-grain fact, plus lead and mart tables), 29 DAX measures validated against the
+SQL results, custom theme and a click-by-click build guide: [`powerbi/`](powerbi/BUILD_GUIDE.md).
 
 ## Business problem
 

@@ -1,0 +1,166 @@
+table fact_seller_leads
+	lineageTag: d6ae1a46-b3c0-5954-ab0f-32ad0706e456
+
+	column mql_id
+		dataType: string
+		isHidden
+		lineageTag: 3aa02b26-8d55-51a5-85ec-633adadd8bb0
+		summarizeBy: none
+		sourceColumn: mql_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_contact_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: e2a1c272-c2da-5684-9b37-5b16a0242bd4
+		summarizeBy: none
+		sourceColumn: first_contact_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column origin
+		dataType: string
+		lineageTag: d54571cf-2d53-5b6e-b701-19493b0a9617
+		summarizeBy: none
+		sourceColumn: origin
+
+		annotation SummarizationSetBy = Automatic
+
+	column landing_page_id
+		dataType: string
+		isHidden
+		lineageTag: b65a8ab8-007e-51a0-a123-22b2d6095d2f
+		summarizeBy: none
+		sourceColumn: landing_page_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_won
+		dataType: int64
+		formatString: 0
+		lineageTag: c09adb9e-b963-50f0-ab75-37b3d6265e13
+		summarizeBy: none
+		sourceColumn: is_won
+
+		annotation SummarizationSetBy = User
+
+	column won_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: c925f493-7228-575c-86dc-0061286972ce
+		summarizeBy: none
+		sourceColumn: won_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column days_to_close
+		dataType: int64
+		formatString: #,##0
+		lineageTag: 4753edd1-c176-5abd-87a5-bfe94b237a39
+		summarizeBy: sum
+		sourceColumn: days_to_close
+
+		annotation SummarizationSetBy = Automatic
+
+	column business_segment
+		dataType: string
+		lineageTag: c78ec06c-120c-5508-8578-9ea12ec436eb
+		summarizeBy: none
+		sourceColumn: business_segment
+
+		annotation SummarizationSetBy = Automatic
+
+	column lead_type
+		dataType: string
+		lineageTag: 1e07654c-fcdf-5ade-b5ab-27b97b0de49b
+		summarizeBy: none
+		sourceColumn: lead_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_id
+		dataType: string
+		isHidden
+		lineageTag: 4537d38f-fc93-56c0-b437-9400ad55e4e4
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_sale_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 47771f43-289e-51c7-bab3-1898dc9af3df
+		summarizeBy: none
+		sourceColumn: first_sale_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column made_first_sale
+		dataType: int64
+		formatString: 0
+		lineageTag: adcf8e91-9fa3-5335-844b-06954a80e0c3
+		summarizeBy: none
+		sourceColumn: made_first_sale
+
+		annotation SummarizationSetBy = User
+
+	column gmv_first_90d
+		dataType: decimal
+		formatString: \R$ #,##0.00
+		lineageTag: eef8d0da-d065-550f-b82b-b7eba40eb367
+		summarizeBy: sum
+		sourceColumn: gmv_first_90d
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	column active_months_first_6
+		dataType: int64
+		formatString: #,##0
+		lineageTag: febe7e6b-4467-5b04-a457-ef30507d7674
+		summarizeBy: sum
+		sourceColumn: active_months_first_6
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_seller_leads = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_seller_leads.csv"),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {
+				        {"mql_id", type text},
+				        {"first_contact_date", type date},
+				        {"origin", type text},
+				        {"landing_page_id", type text},
+				        {"is_won", Int64.Type},
+				        {"won_date", type date},
+				        {"days_to_close", Int64.Type},
+				        {"business_segment", type text},
+				        {"lead_type", type text},
+				        {"seller_id", type text},
+				        {"first_sale_date", type date},
+				        {"made_first_sale", Int64.Type},
+				        {"gmv_first_90d", Currency.Type},
+				        {"active_months_first_6", Int64.Type}
+				    }, "en-US"),
+				    // Column names are already clean snake_case: nothing to rename (kept as an explicit step).
+				    Renamed = Table.RenameColumns(Typed, {})
+				in
+				    Renamed
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

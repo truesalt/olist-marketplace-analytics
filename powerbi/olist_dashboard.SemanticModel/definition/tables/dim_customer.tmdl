@@ -1,0 +1,184 @@
+table dim_customer
+	lineageTag: 9140cbea-22de-5fce-b73c-0e22f54fdec2
+
+	column customer_unique_id
+		dataType: string
+		isHidden
+		lineageTag: 5f1be858-87f3-5bcb-97a0-84b20da9fb08
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column state
+		dataType: string
+		lineageTag: fa6e0cbd-c269-53a2-9a08-b2edb988ce39
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = Automatic
+
+	column region
+		dataType: string
+		lineageTag: c778aea1-86a9-5c18-9328-c0cb9b53a753
+		summarizeBy: none
+		sourceColumn: region
+
+		annotation SummarizationSetBy = Automatic
+
+	column city_clean
+		dataType: string
+		lineageTag: 04f24093-e011-5290-b5ec-8d6082f5d2c4
+		summarizeBy: none
+		sourceColumn: city_clean
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_ts
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn:ss
+		lineageTag: f1c6ba2f-8eb7-5ec9-a734-2314d270cd38
+		summarizeBy: none
+		sourceColumn: first_order_ts
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_month
+		dataType: string
+		lineageTag: c6b8eb58-8517-5abd-a02a-ba194629e8e2
+		summarizeBy: none
+		sourceColumn: first_order_month
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_id
+		dataType: string
+		isHidden
+		lineageTag: 8d0f7b3a-9832-549f-ae01-5a18a8e75f22
+		summarizeBy: none
+		sourceColumn: first_order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_is_late
+		dataType: int64
+		formatString: 0
+		lineageTag: a73f79ca-9785-5fac-a874-5405469e4cff
+		summarizeBy: none
+		sourceColumn: first_order_is_late
+
+		annotation SummarizationSetBy = User
+
+	column first_order_has_voucher
+		dataType: int64
+		formatString: 0
+		lineageTag: 1dc41219-f6d3-5818-a84c-de5938e25a3a
+		summarizeBy: none
+		sourceColumn: first_order_has_voucher
+
+		annotation SummarizationSetBy = User
+
+	column first_order_value
+		dataType: decimal
+		formatString: \R$ #,##0.00
+		lineageTag: 637f0456-884f-5281-a588-001cd1c0d720
+		summarizeBy: sum
+		sourceColumn: first_order_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	column total_orders
+		dataType: int64
+		formatString: #,##0
+		lineageTag: 7711f91f-0ea5-534d-92b7-78101fc05d08
+		summarizeBy: sum
+		sourceColumn: total_orders
+
+		annotation SummarizationSetBy = Automatic
+
+	column total_gmv
+		dataType: decimal
+		formatString: \R$ #,##0.00
+		lineageTag: a30444cd-64eb-5a31-b496-104bd387848b
+		summarizeBy: sum
+		sourceColumn: total_gmv
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	column eligible_repeat
+		dataType: int64
+		formatString: 0
+		lineageTag: a647fa9d-59df-541f-91ee-c1a06e0c631c
+		summarizeBy: none
+		sourceColumn: eligible_repeat
+
+		annotation SummarizationSetBy = User
+
+	column repeat_180d
+		dataType: int64
+		formatString: 0
+		lineageTag: 8e7ab648-53ae-5767-945a-010dceb804e9
+		summarizeBy: none
+		sourceColumn: repeat_180d
+
+		annotation SummarizationSetBy = User
+
+	column rfm_segment
+		dataType: string
+		lineageTag: 0d130093-cb1d-5464-8d98-409ec8c599d3
+		summarizeBy: none
+		sourceColumn: rfm_segment
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_delivery = SWITCH ( dim_customer[first_order_is_late], 1, "Late first order", 0, "On-time first order" )
+		dataType: string
+		lineageTag: 20557285-0cce-45d3-b84e-b481fbbd6acc
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_payment = IF ( dim_customer[first_order_has_voucher] = 1, "Voucher on first order", "No voucher" )
+		dataType: string
+		lineageTag: 3b514eca-9a49-409a-934e-157bd49d6ba7
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_customer = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_customer.csv"),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {
+				        {"customer_unique_id", type text},
+				        {"state", type text},
+				        {"region", type text},
+				        {"city_clean", type text},
+				        {"first_order_ts", type datetime},
+				        {"first_order_month", type text},
+				        {"first_order_id", type text},
+				        {"first_order_is_late", Int64.Type},
+				        {"first_order_has_voucher", Int64.Type},
+				        {"first_order_value", Currency.Type},
+				        {"total_orders", Int64.Type},
+				        {"total_gmv", Currency.Type},
+				        {"eligible_repeat", Int64.Type},
+				        {"repeat_180d", Int64.Type},
+				        {"rfm_segment", type text}
+				    }, "en-US"),
+				    // Column names are already clean snake_case: nothing to rename (kept as an explicit step).
+				    Renamed = Table.RenameColumns(Typed, {})
+				in
+				    Renamed
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

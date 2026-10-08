@@ -1,0 +1,256 @@
+table fact_order_items
+	lineageTag: d97c895b-9f0b-5c1f-9468-d12a3a7a12fa
+
+	column order_id
+		dataType: string
+		isHidden
+		lineageTag: ab1f65bc-4b4a-52f1-b0e2-e1aac22aeb7a
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_item_id
+		dataType: int64
+		isHidden
+		formatString: #,##0
+		lineageTag: c5de3495-735d-5b7f-b0a3-bd7f27232860
+		summarizeBy: none
+		sourceColumn: order_item_id
+
+		annotation SummarizationSetBy = User
+
+	column purchase_date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: 33136f43-d393-5923-b43d-9cedd8d6d93a
+		summarizeBy: none
+		sourceColumn: purchase_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column customer_unique_id
+		dataType: string
+		isHidden
+		lineageTag: a102e911-d50c-5e48-8086-64c17fb5b793
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_id
+		dataType: string
+		isHidden
+		lineageTag: e50482eb-53dd-5552-be37-4dd5219c199c
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_id
+		dataType: string
+		isHidden
+		lineageTag: ad17d853-fb22-5b4f-acd4-cc7100b6db2a
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column price
+		dataType: decimal
+		formatString: \R$ #,##0.00
+		lineageTag: de16249c-f7c6-558b-9cce-78181b56b037
+		summarizeBy: sum
+		sourceColumn: price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	column freight_value
+		dataType: decimal
+		formatString: \R$ #,##0.00
+		lineageTag: ee4be3ff-cfc1-5e13-a38b-17cc8a2ed141
+		summarizeBy: sum
+		sourceColumn: freight_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	column item_gmv
+		dataType: decimal
+		formatString: \R$ #,##0.00
+		lineageTag: 795fc0a5-5ec3-5ba1-b778-7066c256a6dc
+		summarizeBy: sum
+		sourceColumn: item_gmv
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	column order_status
+		dataType: string
+		lineageTag: eb1fc03d-6271-5987-876f-00fa5f04c31e
+		summarizeBy: none
+		sourceColumn: order_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_valid_delivery
+		dataType: int64
+		formatString: 0
+		lineageTag: f60066ed-8e6d-5ba5-b205-c57d8aa9dd6f
+		summarizeBy: none
+		sourceColumn: is_valid_delivery
+
+		annotation SummarizationSetBy = User
+
+	column is_late
+		dataType: int64
+		formatString: 0
+		lineageTag: 4c082f60-b3a7-5edb-8555-c1ef0b796788
+		summarizeBy: none
+		sourceColumn: is_late
+
+		annotation SummarizationSetBy = User
+
+	column delivery_days
+		dataType: int64
+		formatString: 0
+		lineageTag: 7c705cbf-13ff-5032-899a-0fd256de72cb
+		summarizeBy: none
+		sourceColumn: delivery_days
+
+		annotation SummarizationSetBy = User
+
+	column delay_days
+		dataType: int64
+		formatString: 0
+		lineageTag: 86da9421-616a-5332-8e84-a979d99aadee
+		summarizeBy: none
+		sourceColumn: delay_days
+
+		annotation SummarizationSetBy = User
+
+	column delay_bucket
+		dataType: string
+		lineageTag: 2171072a-6e9b-5955-a5b8-5fdba6e67266
+		summarizeBy: none
+		sourceColumn: delay_bucket
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_score
+		dataType: int64
+		formatString: 0
+		lineageTag: aeaa0aa7-287f-552b-b335-5d8767edcc39
+		summarizeBy: none
+		sourceColumn: review_score
+
+		annotation SummarizationSetBy = User
+
+	column is_low_review
+		dataType: int64
+		formatString: 0
+		lineageTag: c82107ac-4560-5426-9885-58b15efff82d
+		summarizeBy: none
+		sourceColumn: is_low_review
+
+		annotation SummarizationSetBy = User
+
+	column has_voucher
+		dataType: int64
+		formatString: #,##0
+		lineageTag: 31de6ad6-5838-536e-9a71-480c29f19bf0
+		summarizeBy: sum
+		sourceColumn: has_voucher
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_type_main
+		dataType: string
+		lineageTag: 446c41b8-e2a6-523e-964c-d78b213f5180
+		summarizeBy: none
+		sourceColumn: payment_type_main
+
+		annotation SummarizationSetBy = Automatic
+
+	column max_installments
+		dataType: int64
+		formatString: #,##0
+		lineageTag: d27defe8-0058-5b57-814c-7cd1f8602e34
+		summarizeBy: sum
+		sourceColumn: max_installments
+
+		annotation SummarizationSetBy = Automatic
+
+	column distance_km
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: eb48a987-b9aa-53dd-aa50-338482cd82ae
+		summarizeBy: sum
+		sourceColumn: distance_km
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_region
+		dataType: string
+		lineageTag: 9691f906-814d-5451-9ac9-42afabc509d1
+		summarizeBy: none
+		sourceColumn: seller_region
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_region
+		dataType: string
+		lineageTag: bf6a5a2e-5830-578a-92b0-ea6632c9253c
+		summarizeBy: none
+		sourceColumn: customer_region
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_order_items = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_order_items.csv"),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {
+				        {"order_id", type text},
+				        {"order_item_id", Int64.Type},
+				        {"purchase_date", type date},
+				        {"customer_unique_id", type text},
+				        {"seller_id", type text},
+				        {"product_id", type text},
+				        {"price", Currency.Type},
+				        {"freight_value", Currency.Type},
+				        {"item_gmv", Currency.Type},
+				        {"order_status", type text},
+				        {"is_valid_delivery", Int64.Type},
+				        {"is_late", Int64.Type},
+				        {"delivery_days", Int64.Type},
+				        {"delay_days", Int64.Type},
+				        {"delay_bucket", type text},
+				        {"review_score", Int64.Type},
+				        {"is_low_review", Int64.Type},
+				        {"has_voucher", Int64.Type},
+				        {"payment_type_main", type text},
+				        {"max_installments", Int64.Type},
+				        {"distance_km", type number},
+				        {"seller_region", type text},
+				        {"customer_region", type text}
+				    }, "en-US"),
+				    // Column names are already clean snake_case: nothing to rename (kept as an explicit step).
+				    Renamed = Table.RenameColumns(Typed, {})
+				in
+				    Renamed
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

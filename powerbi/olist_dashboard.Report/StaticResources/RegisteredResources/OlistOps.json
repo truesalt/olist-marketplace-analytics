@@ -1,0 +1,39 @@
+{
+  "name": "Olist Ops - Midnight & Sky",
+  "dataColors": [
+    "#3A86FF",
+    "#0B1F3A",
+    "#FF8C42",
+    "#C73E1D",
+    "#3B8B5A",
+    "#6C757D",
+    "#8338EC",
+    "#99C24D"
+  ],
+  "background": "#FFFFFF",
+  "foreground": "#1A1A1A",
+  "tableAccent": "#3A86FF",
+  "good": "#3B8B5A",
+  "neutral": "#F18F01",
+  "bad": "#C73E1D",
+  "maximum": "#3B8B5A",
+  "center": "#F7F7F7",
+  "minimum": "#C73E1D",
+  "textClasses": {
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 12,
+      "color": "#1A1A1A"
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "fontSize": 10,
+      "color": "#1A1A1A"
+    },
+    "callout": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 24,
+      "color": "#0B1F3A"
+    }
+  }
+}

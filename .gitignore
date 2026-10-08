@@ -11,6 +11,10 @@ powerbi/data/*
 !powerbi/data/.gitkeep
 # NOTE: *.pbix is deliberately NOT ignored — commit powerbi/olist_dashboard.pbix once built.
 
+# --- Power BI project (PBIP): per-user settings and the data cache, rebuilt on open/refresh
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+
 # --- Python / Jupyter ----------------------------------------------------------
 __pycache__/
 *.pyc

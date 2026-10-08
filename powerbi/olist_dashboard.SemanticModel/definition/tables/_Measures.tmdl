@@ -1,0 +1,176 @@
+table _Measures
+	lineageTag: ed198f4a-83ce-56aa-87f1-e59d805e7e93
+
+	/// Gross merchandise value = item price + freight, valid orders only (R$)
+	measure GMV = SUM ( fact_order_items[item_gmv] )
+		formatString: \R$ #,##0
+		lineageTag: 4ea8274b-0f7b-5d63-b3bb-ead2270df6ca
+
+	/// Item prices only, without freight
+	measure 'Merchandise Value' = SUM ( fact_order_items[price] )
+		formatString: \R$ #,##0
+		lineageTag: 88921a45-1759-5619-afb3-a6f70c28ba01
+
+	/// Distinct valid orders. The fact is item-grain, so orders must be DISTINCTCOUNTed
+	measure Orders = DISTINCTCOUNT ( fact_order_items[order_id] )
+		formatString: #,##0
+		lineageTag: e6d45608-8d96-5e8e-96e9-d9e684653706
+
+	/// Average order value = GMV / Orders
+	measure AOV = DIVIDE ( [GMV], [Orders] )
+		formatString: \R$ #,##0.00
+		lineageTag: 05983d61-0d98-5c62-8b0a-33202bb8fc7f
+
+	/// Distinct people (customer_unique_id) who bought in the current filter context
+	measure Customers = DISTINCTCOUNT ( fact_order_items[customer_unique_id] )
+		formatString: #,##0
+		lineageTag: fddb1623-e862-5d78-af80-144f18b0911b
+
+	/// Distinct sellers with ≥ 1 item sold in the filter context
+	measure 'Active Sellers' = DISTINCTCOUNT ( fact_order_items[seller_id] )
+		formatString: #,##0
+		lineageTag: dd41a128-ef4c-5f89-b35c-236b04d60813
+
+	/// Freight as a share of GMV
+	measure 'Freight Share' = DIVIDE ( SUM ( fact_order_items[freight_value] ), [GMV] )
+		formatString: 0.0%
+		lineageTag: 9f8dc275-9b98-5439-b9a6-b3c7b6d56b51
+
+	/// Orders delivered with a date and no timestamp anomaly
+	measure 'Valid Deliveries' = CALCULATE ( [Orders], fact_order_items[is_valid_delivery] = 1 )
+		formatString: #,##0
+		lineageTag: 0f2f0dda-ed3a-5cb7-b920-0fd3a559e4ab
+
+	/// Valid deliveries that arrived after the promised date
+	measure 'Late Orders' = CALCULATE ( [Orders], fact_order_items[is_valid_delivery] = 1, fact_order_items[is_late] = 1 )
+		formatString: #,##0
+		lineageTag: e4eabb59-693d-5fee-9d15-a157524b4b16
+
+	/// 1 − late / valid deliveries
+	measure 'On-time %' = DIVIDE ( [Valid Deliveries] - [Late Orders], [Valid Deliveries] )
+		formatString: 0.0%
+		lineageTag: 02127e24-2e2c-5c81-b3df-9b63bbef6a1b
+
+	/// Average purchase→delivery days, one value per order (not per item)
+	measure 'Avg Delivery Days' =
+			AVERAGEX (
+			    CALCULATETABLE ( VALUES ( fact_order_items[order_id] ), fact_order_items[is_valid_delivery] = 1 ),
+			    CALCULATE ( MAX ( fact_order_items[delivery_days] ) )
+			)
+		formatString: 0.0
+		lineageTag: 91ed79fa-fc59-5d5f-b629-c926f563300c
+
+	/// Orders that received a review
+	measure 'Reviewed Orders' = CALCULATE ( [Orders], NOT ISBLANK ( fact_order_items[review_score] ) )
+		formatString: #,##0
+		lineageTag: 6d0c38e0-2eaf-5743-a350-f35ca5fc198f
+
+	/// Orders scored 1–2 stars
+	measure 'Low Review Orders' = CALCULATE ( [Orders], fact_order_items[is_low_review] = 1 )
+		formatString: #,##0
+		lineageTag: 2723b545-2dcb-5375-a10d-1d8adfc246f6
+
+	/// Low-review orders / reviewed orders
+	measure 'Low Review %' = DIVIDE ( [Low Review Orders], [Reviewed Orders] )
+		formatString: 0.0%
+		lineageTag: a95ed38d-5476-5c38-b913-f6fee0484e72
+
+	/// GMV of the previous month
+	measure 'GMV PM' = CALCULATE ( [GMV], DATEADD ( dim_date[date], -1, MONTH ) )
+		formatString: \R$ #,##0
+		lineageTag: b421495a-f8e4-53e1-9d1b-9dda6466dfef
+
+	/// Month-over-month growth
+	measure 'GMV MoM %' = DIVIDE ( [GMV] - [GMV PM], [GMV PM] )
+		formatString: 0.0%
+		lineageTag: 3740557e-fc75-569c-be1e-68eb1b6f26ff
+
+	/// GMV of the same period last year
+	measure 'GMV PY' = CALCULATE ( [GMV], SAMEPERIODLASTYEAR ( dim_date[date] ) )
+		formatString: \R$ #,##0
+		lineageTag: baa48c5e-76b3-54ee-a4df-191ecd2b137c
+
+	/// Year-over-year growth, blank where no prior-year data
+	measure 'GMV YoY %' = IF ( NOT ISBLANK ( [GMV PY] ), DIVIDE ( [GMV] - [GMV PY], [GMV PY] ) )
+		formatString: 0.0%
+		lineageTag: d3f36a93-0aad-5c1a-afda-08624174f8a8
+
+	/// Average monthly GMV over the 3 months ending at the current date
+	measure 'GMV 3M Avg' =
+			DIVIDE (
+			    CALCULATE ( [GMV], DATESINPERIOD ( dim_date[date], MAX ( dim_date[date] ), -3, MONTH ) ),
+			    3
+			)
+		formatString: \R$ #,##0
+		lineageTag: 97e8803a-cf04-5201-b334-7754262aa308
+
+	/// People whose first order leaves a full 180-day observation window
+	measure 'Eligible Customers' = CALCULATE ( COUNTROWS ( dim_customer ), dim_customer[eligible_repeat] = 1 )
+		formatString: #,##0
+		lineageTag: 5d55c70b-7236-5360-a86d-cecc6481e835
+
+	/// Eligible people with a later-day valid order within 180 days
+	measure 'Repeat Customers 180d' = CALCULATE ( COUNTROWS ( dim_customer ), dim_customer[eligible_repeat] = 1, dim_customer[repeat_180d] = 1 )
+		formatString: #,##0
+		lineageTag: 94ba1ecc-da5d-593d-a15b-108940470428
+
+	/// Repeat customers / eligible customers
+	measure 'Repeat Rate 180d' = DIVIDE ( [Repeat Customers 180d], [Eligible Customers] )
+		formatString: 0.00%
+		lineageTag: dfc98b79-8ec3-563a-b3aa-3fe4d73e9a26
+
+	/// Dense rank of sellers by late orders in the current selection (1 = most late orders)
+	measure 'Seller Late Rank' = RANKX ( ALLSELECTED ( dim_seller ), [Late Orders], , DESC, DENSE )
+		formatString: 0
+		lineageTag: 0d3264b0-6d0f-59f8-a1e1-bf28a894b47d
+
+	/// 1 if the seller is within the chosen Top N, else 0 (use as visual filter = 1)
+	measure 'Show In Top N' = IF ( [Seller Late Rank] <= 'Top N'[Top N Value], 1, 0 )
+		formatString: 0
+		lineageTag: 8f16cc52-58de-5514-aa0b-8009197eeee5
+
+	/// Marketing-qualified leads
+	measure MQLs = COUNTROWS ( fact_seller_leads )
+		formatString: #,##0
+		lineageTag: 6389130b-bfc8-58ba-9cdc-6b3662fa5e42
+
+	/// Leads that signed (closed deal)
+	measure 'Won Leads' = CALCULATE ( COUNTROWS ( fact_seller_leads ), fact_seller_leads[is_won] = 1 )
+		formatString: #,##0
+		lineageTag: 5d8c93f0-c976-5227-a8e0-3db8e3c8573f
+
+	/// Won / MQLs
+	measure 'Lead Conversion %' = DIVIDE ( [Won Leads], [MQLs] )
+		formatString: 0.0%
+		lineageTag: b4132cd5-4cbb-5eb5-b038-ed47c5ee121e
+
+	/// Won leads whose seller made ≥ 1 valid sale
+	measure 'Sellers With First Sale' = CALCULATE ( COUNTROWS ( fact_seller_leads ), fact_seller_leads[made_first_sale] = 1 )
+		formatString: #,##0
+		lineageTag: ceb13f42-e0b0-5fc9-90ea-651015b7f7b3
+
+	/// GMV in the first 90 days after first sale, averaged over all won leads (non-sellers count as 0)
+	measure 'GMV 90d per Won Seller' = DIVIDE ( SUM ( fact_seller_leads[gmv_first_90d] ), [Won Leads] )
+		formatString: \R$ #,##0
+		lineageTag: a86e1f9d-3189-5b98-8cce-2b563d891502
+
+	/// Category with the highest GMV in the current filter context (tooltip helper)
+	measure 'Main Category' =
+			VAR cat_gmv = ADDCOLUMNS ( VALUES ( dim_product[category_en] ), "@gmv", [GMV] )
+			RETURN MAXX ( TOPN ( 1, cat_gmv, [@gmv], DESC ), dim_product[category_en] )
+		lineageTag: 83059ab1-b1c3-55bb-a908-359bd4642f3c
+
+	column Value
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a81fe569-8ec1-5c08-b600-cfa8ba1aa481
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Measures = calculated
+		mode: import
+		source = ROW ( "Value", BLANK () )
+

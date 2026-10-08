@@ -1,0 +1,101 @@
+table dim_seller
+	lineageTag: f3b9135e-41ed-5f73-8beb-33928d26d2b2
+
+	column seller_id
+		dataType: string
+		lineageTag: bd10d296-3d4d-5516-93f5-33fc2cd6bbb8
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column state
+		dataType: string
+		lineageTag: 6e025ec0-0908-506a-8b03-acfd55518c5b
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = Automatic
+
+	column region
+		dataType: string
+		lineageTag: 428b4ec5-6ec2-5c4f-a8ec-b0f6195b2bad
+		summarizeBy: none
+		sourceColumn: region
+
+		annotation SummarizationSetBy = Automatic
+
+	column city_clean
+		dataType: string
+		lineageTag: 68316262-2422-5123-8b3f-143640f95826
+		summarizeBy: none
+		sourceColumn: city_clean
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_sale_month
+		dataType: string
+		lineageTag: 4b6e69fd-eced-50ed-b65e-a869adcb9e2c
+		summarizeBy: none
+		sourceColumn: first_sale_month
+
+		annotation SummarizationSetBy = Automatic
+
+	column last_sale_month
+		dataType: string
+		lineageTag: 5c0200b3-5d35-518c-8c34-329a2b792506
+		summarizeBy: none
+		sourceColumn: last_sale_month
+
+		annotation SummarizationSetBy = Automatic
+
+	column lead_origin
+		dataType: string
+		lineageTag: 55dce368-bb98-5c9c-9d4e-4b8e056f39ad
+		summarizeBy: none
+		sourceColumn: lead_origin
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_acquired_via_funnel
+		dataType: int64
+		formatString: 0
+		lineageTag: a9426ed2-72b9-5427-960f-9ab8e85af972
+		summarizeBy: none
+		sourceColumn: is_acquired_via_funnel
+
+		annotation SummarizationSetBy = User
+
+	column seller_code = LEFT ( dim_seller[seller_id], 8 )
+		dataType: string
+		lineageTag: bc91de0e-c5d2-5c50-8149-5049eadaa8c7
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_seller = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_seller.csv"),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {
+				        {"seller_id", type text},
+				        {"state", type text},
+				        {"region", type text},
+				        {"city_clean", type text},
+				        {"first_sale_month", type text},
+				        {"last_sale_month", type text},
+				        {"lead_origin", type text},
+				        {"is_acquired_via_funnel", Int64.Type}
+				    }, "en-US"),
+				    // Column names are already clean snake_case: nothing to rename (kept as an explicit step).
+				    Renamed = Table.RenameColumns(Typed, {})
+				in
+				    Renamed
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
